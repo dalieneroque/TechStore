@@ -12,6 +12,15 @@ namespace TechStore.Application.Mappings
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
             CreateMap<CriarCategoriaDTO, Categoria>();
             CreateMap<AtualizarCategoriaDTO, Categoria>();
-        }
+
+
+            CreateMap<Produto, ProdutoDTO>()
+                .ForMember(dest => dest.CategoriaNome, 
+                           opt => opt.MapFrom(src => src.Categoria.Nome))
+                .ReverseMap();
+
+            CreateMap<CriarProdutoDTO, Produto>();
+            CreateMap<AtualizarProdutoDTO, Produto>();
+        }     
     }
 }
