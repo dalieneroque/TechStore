@@ -51,5 +51,10 @@ namespace TechStore.Infrastructure.Repositories
             var entity = await GetByIdAsync(id);
             return entity != null;
         }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

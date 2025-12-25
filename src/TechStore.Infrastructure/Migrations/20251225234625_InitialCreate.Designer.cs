@@ -12,8 +12,8 @@ using TechStore.Infrastructure.Data;
 namespace TechStore.Infrastructure.Migrations
 {
     [DbContext(typeof(TechStoreDbContext))]
-    [Migration("20251219235250_AdicionarProdutos")]
-    partial class AdicionarProdutos
+    [Migration("20251225234625_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace TechStore.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Ativo")
+                    b.Property<bool>("Ativa")
                         .HasColumnType("bit");
 
                     b.Property<string>("Descricao")
@@ -60,11 +60,7 @@ namespace TechStore.Infrastructure.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
 
-                    b.Property<string>("CategoriaId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CategoriaId1")
+                    b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DataCriacao")
@@ -90,7 +86,7 @@ namespace TechStore.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId1");
+                    b.HasIndex("CategoriaId");
 
                     b.ToTable("Produtos");
                 });
@@ -98,12 +94,17 @@ namespace TechStore.Infrastructure.Migrations
             modelBuilder.Entity("TechStore.Core.Entities.Produto", b =>
                 {
                     b.HasOne("TechStore.Core.Entities.Categoria", "Categoria")
-                        .WithMany()
-                        .HasForeignKey("CategoriaId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Produtos")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("TechStore.Core.Entities.Categoria", b =>
+                {
+                    b.Navigation("Produtos");
                 });
 #pragma warning restore 612, 618
         }

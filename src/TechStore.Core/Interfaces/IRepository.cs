@@ -13,7 +13,7 @@ namespace TechStore.Core.Interfaces
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
-        Task<bool>SaveChangeAsync();
+        Task<bool>SaveChangesAsync();
 
         //Métodos específicos
         Task<bool>ExistsAsync(int id);

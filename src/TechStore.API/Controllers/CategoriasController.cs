@@ -65,7 +65,7 @@ namespace TechStore.API.Controllers
             var categoria = _mapper.Map<Categoria>(criarCategoriaDTO);
             await _categoriaRepository.AddAsync(categoria);
 
-            var salvou = await _categoriaRepository.SaveChangeAsync();
+            var salvou = await _categoriaRepository.SaveChangesAsync();
             if (!salvou)
             {
                 return BadRequest(new { message = "Não foi possível criar a categoria" });
@@ -108,7 +108,7 @@ namespace TechStore.API.Controllers
             }
 
             await _categoriaRepository.UpdateAsync(categoriaExistente);
-            var salvou = await _categoriaRepository.SaveChangeAsync();
+            var salvou = await _categoriaRepository.SaveChangesAsync();
 
             if (!salvou)
             {
@@ -129,7 +129,7 @@ namespace TechStore.API.Controllers
             }
 
             await _categoriaRepository.DeleteAsync(categoria);
-            var salvou = await _categoriaRepository.SaveChangeAsync();
+            var salvou = await _categoriaRepository.SaveChangesAsync();
 
             if (!salvou)
             {
