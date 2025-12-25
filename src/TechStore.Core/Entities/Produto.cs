@@ -7,7 +7,7 @@
         public decimal Preco { get; private set; }
         public int QuantidadeEstoque { get; private set; }
         public string ImagemUrl { get; private set; }
-        public string CategoriaId { get; private set; }
+        public int CategoriaId { get; private set; }
         public Categoria Categoria { get; private set; }
         public DateTime DataCriacao { get; private set; }
         public bool Ativo { get; private set; }
@@ -16,7 +16,7 @@
         private Produto() { }
 
         //Contrutor principal
-        public Produto(string nome, string descricao, decimal preco, int quantidadeEstoque, string imagemUrl, string categoriaId)
+        public Produto(string nome, string descricao, decimal preco, int quantidadeEstoque, string imagemUrl, int categoriaId)
         {
             Nome = nome;
             Descricao = descricao;
@@ -31,7 +31,7 @@
         }
 
         //Métodos de domínio
-        public void Atualizar(string nome, string descricao, decimal preco, string imagemUrl, string categoriaId)
+        public void Atualizar(string nome, string descricao, decimal preco, string imagemUrl, int categoriaId)
         {
             Nome = nome;
             Descricao = descricao;

@@ -13,6 +13,7 @@ builder.Services.AddDbContext<TechStoreDbContext>(options =>
 // Registrar repositórios
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 // Registrar AutoMapper
 builder.Services.AddAutoMapper(typeof(TechStore.Application.Mappings.MappingProfile));

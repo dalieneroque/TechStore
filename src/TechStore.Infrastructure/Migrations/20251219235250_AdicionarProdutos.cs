@@ -22,7 +22,7 @@ namespace TechStore.Infrastructure.Migrations
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     QuantidadeEstoque = table.Column<int>(type: "int", nullable: false),
                     ImagemUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoriaId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoriaId = table.Column<int>(nullable: false),
                     CategoriaId1 = table.Column<int>(type: "int", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false)
