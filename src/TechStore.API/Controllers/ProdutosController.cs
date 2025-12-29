@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TechStore.Application.DTOs;
-using TechStore.Core.Entities;
-using TechStore.Core.Interfaces;
+using TechStore.Application.Interfaces;
 
 namespace TechStore.API.Controllers
 {
@@ -10,69 +11,131 @@ namespace TechStore.API.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly IProdutoRepository _produtoRepository;
-        private readonly IMapper _mapper;
+        private readonly IProdutoService _produtoService;
 
-        public ProdutosController(IProdutoRepository produtoRepository, IMapper mapper)
+        public ProdutosController(IProdutoService produtoService)
         {
-            _produtoRepository = produtoRepository;
-            _mapper = mapper;
+            _produtoService = produtoService;
         }
 
         // GET: api/produtos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
-            var produtos = await _produtoRepository.GetProdutosAtivosAsync();
-            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return Ok(produtosDTO);
+            try
+            {
+                var produtos = await _produtoService.ObterProdutosAtivosAsync();
+                return Ok(produtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // GET: api/produtos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProdutoDTO>> GetProduto(int id)
         {
-            var produto = await _produtoRepository.GetProdutoComCategoriaAsync(id);
-
-            if (produto == null)
+            try
             {
-                return NotFound(new { message = $"Produto com ID {id} não encontrado" });
+                var produto = await _produtoService.ObterProdutoPorIdAsync(id);
+                return Ok(produto);
             }
-
-            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
-            return Ok(produtoDTO);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // GET: api/produtos/categoria/5
         [HttpGet("categoria/{categoriaId}")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosPorCategoria(int categoriaId)
         {
-            var produtos = await _produtoRepository.GetProdutosPorCategoriaAsync(categoriaId);
-            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return Ok(produtosDTO);
+            try
+            {
+                var produtos = await _produtoService.ObterProdutosPorCategoriaAsync(categoriaId);
+                return Ok(produtos);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // GET: api/produtos/estoque
         [HttpGet("estoque")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosComEstoque()
         {
-            var produtos = await _produtoRepository.GetProdutosComEstoqueAsync();
-            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return Ok(produtosDTO);
+            try
+            {
+                var produtos = await _produtoService.ObterProdutosComEstoqueAsync();
+                return Ok(produtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
+        // GET: api/produtos/recentes/5
+        [HttpGet("recentes/{quantidade}")]
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosRecentes(int quantidade)
+        {
+            try
+            {
+                if (quantidade <= 0 || quantidade > 50)
+                    return BadRequest(new { message = "A quantidade deve estar entre 1 e 50" });
+
+                var produtos = await _produtoService.ObterProdutosRecentesAsync(quantidade);
+                return Ok(produtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
+        // GET: api/produtos/promocao
+        [HttpGet("promocao")]
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosEmPromocao()
+        {
+            try
+            {
+                var produtos = await _produtoService.ObterProdutosEmPromocaoAsync();
+                return Ok(produtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // GET: api/produtos/search/termo
         [HttpGet("search/{term}")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> SearchProdutos(string term)
         {
-            if (string.IsNullOrWhiteSpace(term) || term.Length < 3)
+            try
             {
-                return BadRequest(new { message = "O termo de busca deve ter pelo menos 3 caracteres" });
+                var produtos = await _produtoService.BuscarProdutosAsync(term);
+                return Ok(produtos);
             }
-
-            var produtos = await _produtoRepository.SearchProdutosAsync(term);
-            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return Ok(produtosDTO);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // POST: api/produtos
@@ -84,20 +147,23 @@ namespace TechStore.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var produto = _mapper.Map<Produto>(criarProdutoDTO);
-            await _produtoRepository.AddAsync(produto);
-
-            var salvou = await _produtoRepository.SaveChangesAsync();
-            if (!salvou)
+            try
             {
-                return BadRequest(new { message = "Não foi possível criar o produto" });
+                var produto = await _produtoService.CriarProdutoAsync(criarProdutoDTO);
+                return CreatedAtAction(nameof(GetProduto), new { id = produto.Id }, produto);
             }
-
-            // Recuperar com categoria para o DTO
-            var produtoCompleto = await _produtoRepository.GetProdutoComCategoriaAsync(produto.Id);
-            var produtoDTO = _mapper.Map<ProdutoDTO>(produtoCompleto);
-
-            return CreatedAtAction(nameof(GetProduto), new { id = produto.Id }, produtoDTO);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
 
         // PUT: api/produtos/5
@@ -109,82 +175,49 @@ namespace TechStore.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != atualizarProdutoDTO.Id)
+            try
             {
-                return BadRequest(new { message = "ID na rota não corresponde ao ID no corpo da requisição" });
+                await _produtoService.AtualizarProdutoAsync(id, atualizarProdutoDTO);
+                return NoContent();
             }
-
-            var produtoExistente = await _produtoRepository.GetByIdAsync(id);
-            if (produtoExistente == null)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { message = $"Produto com ID {id} não encontrado" });
+                return BadRequest(new { message = ex.Message });
             }
-
-            _mapper.Map(atualizarProdutoDTO, produtoExistente);
-
-            // Atualizar status do produto
-            if (atualizarProdutoDTO.Ativo)
+            catch (KeyNotFoundException ex)
             {
-                produtoExistente.Ativar();
+                return NotFound(new { message = ex.Message });
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                produtoExistente.Desativar();
+                return BadRequest(new { message = ex.Message });
             }
-
-            await _produtoRepository.UpdateAsync(produtoExistente);
-            var salvou = await _produtoRepository.SaveChangesAsync();
-
-            if (!salvou)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = "Não foi possível atualizar o produto" });
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
             }
-
-            return NoContent();
         }
 
         // PATCH: api/produtos/5/estoque
         [HttpPatch("{id}/estoque")]
         public async Task<IActionResult> PatchEstoque(int id, AtualizarEstoqueDTO atualizarEstoqueDTO)
         {
-            var produto = await _produtoRepository.GetByIdAsync(id);
-            if (produto == null)
-            {
-                return NotFound(new { message = $"Produto com ID {id} não encontrado" });
-            }
-
             try
             {
-                if (atualizarEstoqueDTO.Quantidade >= 0)
-                {
-                    produto.AdicionarEstoque(atualizarEstoqueDTO.Quantidade);
-                }
-                else
-                {
-                    produto.RemoverEstoque(-atualizarEstoqueDTO.Quantidade);
-                }
-
-                await _produtoRepository.UpdateAsync(produto);
-                var salvou = await _produtoRepository.SaveChangesAsync();
-
-                if (!salvou)
-                {
-                    return BadRequest(new { message = "Não foi possível atualizar o estoque" });
-                }
-
-                return Ok(new
-                {
-                    message = "Estoque atualizado com sucesso",
-                    novoEstoque = produto.QuantidadeEstoque
-                });
+                await _produtoService.AtualizarEstoqueAsync(id, atualizarEstoqueDTO);
+                return NoContent();
             }
-            catch (System.ArgumentException ex)
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
-            catch (System.InvalidOperationException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
             }
         }
 
@@ -192,24 +225,19 @@ namespace TechStore.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduto(int id)
         {
-            var produto = await _produtoRepository.GetByIdAsync(id);
-            if (produto == null)
+            try
             {
-                return NotFound(new { message = $"Produto com ID {id} não encontrado" });
+                await _produtoService.ExcluirProdutoAsync(id);
+                return NoContent();
             }
-
-            // Soft delete - apenas desativa
-            produto.Desativar();
-
-            await _produtoRepository.UpdateAsync(produto);
-            var salvou = await _produtoRepository.SaveChangesAsync();
-
-            if (!salvou)
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new { message = "Não foi possível excluir o produto" });
+                return NotFound(new { message = ex.Message });
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
         }
     }
 }
