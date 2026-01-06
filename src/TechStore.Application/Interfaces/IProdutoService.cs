@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TechStore.Application.DTOs;
+using TechStore.Application.Models;
 
 namespace TechStore.Application.Interfaces
 {
@@ -20,5 +21,8 @@ namespace TechStore.Application.Interfaces
         // Novos métodos específicos
         Task<IEnumerable<ProdutoDTO>> ObterProdutosRecentesAsync(int quantidade);
         Task<IEnumerable<ProdutoDTO>> ObterProdutosEmPromocaoAsync();
+
+        Task<PagedResult<ProdutoDTO>> ObterProdutosPaginadosAsync(PagedRequest request);
+        Task<PagedResult<ProdutoDTO>> FiltrarProdutosAsync(ProdutoFiltroDTO filtro, PagedRequest paginacao);
     }
 }

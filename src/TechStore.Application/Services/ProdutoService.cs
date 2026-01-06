@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TechStore.Application.DTOs;
 using TechStore.Application.Interfaces;
+using TechStore.Application.Models;
 using TechStore.Core.Entities;
 using TechStore.Core.Interfaces;
 
@@ -191,5 +192,138 @@ namespace TechStore.Application.Services
                        .OrderByDescending(p => p.DataCriacao)
                        .Take(10));
         }
+
+
+        // NOVO: Método para obter query base (reutilizável)
+        private async Task<IQueryable<Produto>> GetBaseQueryAsync(bool incluirCategoria = true)
+        {
+            var query = await _produtoRepository.GetQueryableAsync();
+
+            if (!incluirCategoria)
+            {
+                // Se não precisar incluir categoria, refaz a query
+                var produtos = await _produtoRepository.GetAllAsync();
+                return produtos.AsQueryable();
+            }
+
+            return query;
+        }
+
+        // Método corrigido para paginação
+        public async Task<PagedResult<ProdutoDTO>> ObterProdutosPaginadosAsync(PagedRequest request)
+        {
+            var query = await GetBaseQueryAsync();
+
+            // Aplicar filtro padrão (apenas ativos)
+            query = query.Where(p => p.Ativo);
+
+            // Ordenação
+            query = request.SortBy?.ToLower() switch
+            {
+                "preco" => request.SortDescending ? query.OrderByDescending(p => p.Preco)
+                                                  : query.OrderBy(p => p.Preco),
+                "datacriacao" => request.SortDescending ? query.OrderByDescending(p => p.DataCriacao)
+                                                       : query.OrderBy(p => p.DataCriacao),
+                "nome" => request.SortDescending ? query.OrderByDescending(p => p.Nome)
+                                                : query.OrderBy(p => p.Nome),
+                _ => query.OrderBy(p => p.Nome)
+            };
+
+            // Substitua esta linha:
+            // var totalCount = await query.CountAsync();
+
+            // Por esta linha:
+            var totalCount = query.Count();
+
+            // Paginação
+            var items = query
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList(); // ToList() já é síncrono porque é IQueryable
+
+            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(items);
+
+            return new PagedResult<ProdutoDTO>
+            {
+                Items = produtosDTO,
+                TotalCount = totalCount,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
+        // Método corrigido para filtros
+        public async Task<PagedResult<ProdutoDTO>> FiltrarProdutosAsync(ProdutoFiltroDTO filtro, PagedRequest paginacao)
+        {
+            var query = await GetBaseQueryAsync();
+
+            // Aplicar filtros
+            if (!string.IsNullOrWhiteSpace(filtro.Nome))
+            {
+                query = query.Where(p => p.Nome.Contains(filtro.Nome));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filtro.Descricao))
+            {
+                query = query.Where(p => p.Descricao.Contains(filtro.Descricao));
+            }
+
+            if (filtro.CategoriaId.HasValue)
+            {
+                query = query.Where(p => p.CategoriaId == filtro.CategoriaId.Value);
+            }
+
+            if (filtro.PrecoMinimo.HasValue)
+            {
+                query = query.Where(p => p.Preco >= filtro.PrecoMinimo.Value);
+            }
+
+            if (filtro.PrecoMaximo.HasValue)
+            {
+                query = query.Where(p => p.Preco <= filtro.PrecoMaximo.Value);
+            }
+
+            if (filtro.Ativo.HasValue)
+            {
+                query = query.Where(p => p.Ativo == filtro.Ativo.Value);
+            }
+
+            if (filtro.ComEstoque.HasValue && filtro.ComEstoque.Value)
+            {
+                query = query.Where(p => p.QuantidadeEstoque > 0);
+            }
+
+            // Ordenação
+            query = filtro.OrdenarPor?.ToLower() switch
+            {
+                "preco" => filtro.OrdemDescendente ? query.OrderByDescending(p => p.Preco)
+                                                  : query.OrderBy(p => p.Preco),
+                "datacriacao" => filtro.OrdemDescendente ? query.OrderByDescending(p => p.DataCriacao)
+                                                       : query.OrderBy(p => p.DataCriacao),
+                "nome" => filtro.OrdemDescendente ? query.OrderByDescending(p => p.Nome)
+                                                : query.OrderBy(p => p.Nome),
+                _ => query.OrderBy(p => p.Nome)
+            };
+
+            // Contagem total (antes da paginação)
+            var totalCount = query.Count();
+
+            // Paginação
+            var items = query
+                .Skip((paginacao.PageNumber - 1) * paginacao.PageSize)
+                .Take(paginacao.PageSize)
+                .ToList();
+
+            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(items);
+
+            return new PagedResult<ProdutoDTO>
+            {
+                Items = produtosDTO,
+                TotalCount = totalCount,
+                PageNumber = paginacao.PageNumber,
+                PageSize = paginacao.PageSize
+            };
+        }
+
     }
 }

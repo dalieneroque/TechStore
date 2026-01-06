@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TechStore.Core.Entities;
 using TechStore.Core.Interfaces;
@@ -55,6 +56,27 @@ namespace TechStore.Infrastructure.Repositories
                 .Include(p => p.Categoria)
                 .Take(20) // Limitar resultados
                 .ToListAsync();
+        }
+
+        // Adicione estes métodos à classe existente:
+        public async Task<IQueryable<Produto>> GetQueryableAsync()
+        {
+            // Retorna IQueryable para permitir composição de queries
+            return await Task.FromResult(_context.Produtos
+                .Include(p => p.Categoria)
+                .AsQueryable());
+        }
+
+        public async Task<int> CountAsync(Expression<Func<Produto, bool>> predicate = null)
+        {
+            var query = _context.Produtos.AsQueryable();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.CountAsync();
         }
 
     }
