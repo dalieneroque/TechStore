@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using TechStore.Application.Interfaces;
 using TechStore.Application.Services;
 using TechStore.Core.Interfaces;
@@ -20,6 +21,8 @@ builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 // Registrar serviços de aplicação
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+
 
 // Registrar AutoMapper
 builder.Services.AddAutoMapper(typeof(TechStore.Application.Mappings.MappingProfile));
@@ -38,7 +41,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/Uploads",
+    OnPrepareResponse = ctx =>
+    {
+         ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000");
+    }
+});
+
+
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

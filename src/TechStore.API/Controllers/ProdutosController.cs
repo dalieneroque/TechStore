@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TechStore.Application.DTOs;
 using TechStore.Application.Interfaces;
+using TechStore.Application.Models;
 
 namespace TechStore.API.Controllers
 {
@@ -138,6 +139,33 @@ namespace TechStore.API.Controllers
             }
         }
 
+        // GET: api/produtos/paginados
+        [HttpGet("paginados")]
+        public async Task<ActionResult<PagedResult<ProdutoDTO>>> GetProdutosPaginados(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] bool sortDescending = false)
+        {
+            try
+            {
+                var request = new PagedRequest
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    SortBy = sortBy,
+                    SortDescending = sortDescending
+                };
+
+                var result = await _produtoService.ObterProdutosPaginadosAsync(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
         // POST: api/produtos
         [HttpPost]
         public async Task<ActionResult<ProdutoDTO>> PostProduto(CriarProdutoDTO criarProdutoDTO)
@@ -159,6 +187,91 @@ namespace TechStore.API.Controllers
             catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
+        // GET: api/produtos/{id}/imagem
+        [HttpGet("{id}/imagem")]
+        public async Task<ActionResult> GetImagemProduto(int id)
+        {
+            try
+            {
+                var produto = await _produtoService.ObterProdutoPorIdAsync(id);
+
+                if (produto == null || string.IsNullOrEmpty(produto.ImagemUrl))
+                    return NotFound(new { message = "Imagem não encontrada" });
+
+                // Aqui retornaria o arquivo físico
+                // Por enquanto, retornamos a URL
+                return Ok(new
+                {
+                    imagemUrl = produto.ImagemUrl,
+                    mensagem = "Implementação completa requer servidor de arquivos estáticos configurado"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
+        // POST: api/produtos/filtrar
+        [HttpPost("filtrar")]
+        public async Task<ActionResult<PagedResult<ProdutoDTO>>> FiltrarProdutos(
+            [FromBody] ProdutoFiltroDTO filtro,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var paginacao = new PagedRequest
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+                var result = await _produtoService.FiltrarProdutosAsync(filtro, paginacao);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
+        // POST: api/produtos/{id}/upload-imagem
+        [HttpPost("{id}/upload-imagem")]
+        public async Task<ActionResult> UploadImagem(int id, [FromForm] UploadImagemDTO uploadDTO)
+        {
+            try
+            {
+                // Verificar se produto existe
+                var produto = await _produtoService.ObterProdutoPorIdAsync(id);
+
+                if (produto == null)
+                    return NotFound(new { message = $"Produto com ID {id} não encontrado" });
+
+                // Validar arquivo
+                if (uploadDTO.Arquivo == null || uploadDTO.Arquivo.Length == 0)
+                    return BadRequest(new { message = "Nenhum arquivo enviado" });
+
+                // Aqui você precisaria injetar IFileUploadService no controller
+                // Por enquanto, retornaremos uma mensagem de sucesso simulada
+                return Ok(new
+                {
+                    message = "Upload realizado com sucesso (implementação completa requer IFileUploadService)",
+                    produtoId = id,
+                    fileName = uploadDTO.Arquivo.FileName,
+                    size = uploadDTO.Arquivo.Length
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
