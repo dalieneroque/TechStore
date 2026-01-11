@@ -98,5 +98,6 @@ namespace TechStore.API.Controllers
         {
             return Ok(new { mensagem = "Acesso permitido para administradores" });
         }
+        
     }
 }
