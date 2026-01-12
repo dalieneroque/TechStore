@@ -37,6 +37,7 @@ namespace TechStore.Application.Services
             _mapper = mapper;
         }
 
+
         public async Task<AuthResponseDTO> RegistrarAsync(RegistrarUsuarioDTO registrarDTO)
         {
             try
@@ -90,12 +91,18 @@ namespace TechStore.Application.Services
             }
             catch (Exception ex)
             {
+                var erroReal =
+                    ex.InnerException?.Message ??
+                    ex.InnerException?.InnerException?.Message ??
+                    ex.Message;
+
                 return new AuthResponseDTO
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro interno: {ex.Message}"
+                    Mensagem = $"Erro interno REAL: {erroReal}"
                 };
             }
+
         }
 
 
@@ -167,7 +174,9 @@ namespace TechStore.Application.Services
             }
 
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
+            var secret = jwtSettings["SecretKey"]
+                ?? throw new Exception("JWT SecretKey não configurada");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"]));
 

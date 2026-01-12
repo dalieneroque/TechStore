@@ -155,6 +155,19 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    if (!await roleManager.RoleExistsAsync("Cliente"))
+        await roleManager.CreateAsync(new IdentityRole("Cliente"));
+
+    if (!await roleManager.RoleExistsAsync("Admin"))
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+}
+
+
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
