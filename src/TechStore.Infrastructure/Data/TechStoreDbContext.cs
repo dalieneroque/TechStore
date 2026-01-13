@@ -15,6 +15,8 @@ namespace TechStore.Infrastructure.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<ItemPedido> ItensPedido { get; set; }
+        public DbSet<Carrinho> Carrinhos { get; set; }
+        public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +37,24 @@ namespace TechStore.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ItemPedido>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Carrinho>()
+                .HasOne(c => c.Usuario)
+                .WithMany()
+                .HasForeignKey(c => c.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Carrinho>()
+                .HasMany(c => c.Itens)
+                .WithOne(i => i.Carrinho)
+                .HasForeignKey(i => i.CarrinhoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CarrinhoItem>()
                 .HasOne(i => i.Produto)
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
