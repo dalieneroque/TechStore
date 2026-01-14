@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TechStore.Application.DTOs;
 using TechStore.Application.Interfaces;
@@ -22,19 +23,22 @@ namespace TechStore.Application.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<AuthService> _logger;
 
         public AuthService(
             UserManager<Usuario> userManager,
             SignInManager<Usuario> signInManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<AuthService> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -96,10 +100,12 @@ namespace TechStore.Application.Services
                     ex.InnerException?.InnerException?.Message ??
                     ex.Message;
 
+                _logger.LogError(ex, "Erro ao registrar usuário: {ErroReal}", erroReal);
+
                 return new AuthResponseDTO
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro interno REAL: {erroReal}"
+                    Mensagem = "Ocorreu um erro interno. Tente novamente mais tarde."
                 };
             }
 
@@ -147,10 +153,13 @@ namespace TechStore.Application.Services
             }
             catch (Exception ex)
             {
+
+                _logger.LogError(ex, "Erro interno ao processar autenticação");
+
                 return new AuthResponseDTO
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro interno: {ex.Message}"
+                    Mensagem = "Ocorreu um erro interno. Tente novamente mais tarde."
                 };
             }
         }
