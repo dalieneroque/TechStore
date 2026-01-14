@@ -21,6 +21,27 @@ namespace TechStore.Application.Mappings
 
             CreateMap<CriarProdutoDTO, Produto>();
             CreateMap<AtualizarProdutoDTO, Produto>();
+
+            // Mapeamentos de Carrinho
+            CreateMap<Carrinho, CarrinhoDTO>()
+                .ForMember(dest => dest.TotalItens, opt => opt.MapFrom(src => src.Itens.Sum(i => i.Quantidade)))
+                .ReverseMap();
+
+            CreateMap<CarrinhoItem, CarrinhoItemDTO>()
+                .ForMember(dest => dest.ProdutoNome, opt => opt.MapFrom(src => src.Produto.Nome))
+                .ForMember(dest => dest.ProdutoImagemUrl, opt => opt.MapFrom(src => src.Produto.ImagemUrl))
+                .ForMember(dest => dest.EstoqueDisponivel, opt => opt.MapFrom(src => src.Produto.QuantidadeEstoque));
+
+            // Mapeamentos de Pedido
+            CreateMap<Pedido, PedidoDTO>()
+                .ForMember(dest => dest.UsuarioNome, opt => opt.MapFrom(src => src.Usuario.NomeCompleto));
+
+            CreateMap<ItemPedido, ItemPedidoDTO>()
+                .ForMember(dest => dest.ProdutoNome, opt => opt.MapFrom(src => src.Produto.Nome))
+                .ForMember(dest => dest.ProdutoImagemUrl, opt => opt.MapFrom(src => src.Produto.ImagemUrl));
+
+
+
         }     
     }
 }
