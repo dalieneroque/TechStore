@@ -166,6 +166,31 @@ namespace TechStore.API.Controllers
             }
         }
 
+        // GET: api/produtos/{id}/imagem
+        [HttpGet("{id}/imagem")]
+        public async Task<ActionResult> GetImagemProduto(int id)
+        {
+            try
+            {
+                var produto = await _produtoService.ObterProdutoPorIdAsync(id);
+
+                if (produto == null || string.IsNullOrEmpty(produto.ImagemUrl))
+                    return NotFound(new { message = "Imagem não encontrada" });
+
+                // Aqui retornaria o arquivo físico
+                // Por enquanto, retornamos a URL
+                return Ok(new
+                {
+                    imagemUrl = produto.ImagemUrl,
+                    mensagem = "Implementação completa requer servidor de arquivos estáticos configurado"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+            }
+        }
+
         // POST: api/produtos
         [HttpPost]
         public async Task<ActionResult<ProdutoDTO>> PostProduto(CriarProdutoDTO criarProdutoDTO)
@@ -192,32 +217,7 @@ namespace TechStore.API.Controllers
             {
                 return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
             }
-        }
-
-        // GET: api/produtos/{id}/imagem
-        [HttpGet("{id}/imagem")]
-        public async Task<ActionResult> GetImagemProduto(int id)
-        {
-            try
-            {
-                var produto = await _produtoService.ObterProdutoPorIdAsync(id);
-
-                if (produto == null || string.IsNullOrEmpty(produto.ImagemUrl))
-                    return NotFound(new { message = "Imagem não encontrada" });
-
-                // Aqui retornaria o arquivo físico
-                // Por enquanto, retornamos a URL
-                return Ok(new
-                {
-                    imagemUrl = produto.ImagemUrl,
-                    mensagem = "Implementação completa requer servidor de arquivos estáticos configurado"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
-            }
-        }
+        }      
 
         // POST: api/produtos/filtrar
         [HttpPost("filtrar")]

@@ -47,6 +47,24 @@ namespace TechStore.API.Controllers
             return Ok(pedido);
         }
 
+        // GET: api/pedidos/status/{status} (Admin only)
+        [HttpGet("status/{status}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetPedidosPorStatus(string status)
+        {
+            var pedidos = await _pedidoService.ObterPedidosPorStatusAsync(status);
+            return Ok(pedidos);
+        }
+
+        // GET: api/pedidos/contagem
+        [HttpGet("contagem")]
+        public async Task<ActionResult<int>> GetContagemPedidos()
+        {
+            var usuarioId = ObterUsuarioId();
+            var contagem = await _pedidoService.ContarPedidosPorUsuarioAsync(usuarioId);
+            return Ok(contagem);
+        }
+
         // POST: api/pedidos
         [HttpPost]
         public async Task<ActionResult<PedidoDTO>> CriarPedido(CriarPedidoDTO pedidoDTO)
@@ -69,23 +87,6 @@ namespace TechStore.API.Controllers
             var pedido = await _pedidoService.AtualizarStatusAsync(id, statusDTO, IsAdmin());
             return Ok(pedido);
         }
-
-        // GET: api/pedidos/status/{status} (Admin only)
-        [HttpGet("status/{status}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> GetPedidosPorStatus(string status)
-        {
-            var pedidos = await _pedidoService.ObterPedidosPorStatusAsync(status);
-            return Ok(pedidos);
-        }
-
-        // GET: api/pedidos/contagem
-        [HttpGet("contagem")]
-        public async Task<ActionResult<int>> GetContagemPedidos()
-        {
-            var usuarioId = ObterUsuarioId();
-            var contagem = await _pedidoService.ContarPedidosPorUsuarioAsync(usuarioId);
-            return Ok(contagem);
-        }
+       
     }
 }

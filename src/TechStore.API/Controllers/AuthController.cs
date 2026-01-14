@@ -17,6 +17,23 @@ namespace TechStore.API.Controllers
             _authService = authService;
         }
 
+        // GET: api/auth/perfil
+        [HttpGet("perfil")]
+        [Authorize]
+        public ActionResult GetPerfil()
+        {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            return Ok(new { claims });
+        }
+
+        // GET: api/auth/admin
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult AcessoAdmin()
+        {
+            return Ok(new { mensagem = "Acesso permitido para administradores" });
+        }
+
         // POST: api/auth/registrar
         [HttpPost("registrar")]
         [AllowAnonymous]
@@ -80,23 +97,6 @@ namespace TechStore.API.Controllers
 
             await _authService.LogoutAsync(usuarioId);
             return Ok(new { mensagem = "Logout realizado com sucesso" });
-        }
-
-        // GET: api/auth/perfil
-        [HttpGet("perfil")]
-        [Authorize]
-        public ActionResult GetPerfil()
-        {
-            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-            return Ok(new { claims });
-        }
-
-        // GET: api/auth/admin
-        [HttpGet("admin")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult AcessoAdmin()
-        {
-            return Ok(new { mensagem = "Acesso permitido para administradores" });
         }
         
     }
