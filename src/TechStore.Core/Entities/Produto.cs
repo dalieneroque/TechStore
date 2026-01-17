@@ -11,6 +11,14 @@
         public Categoria Categoria { get; private set; }
         public DateTime DataCriacao { get; private set; }
         public bool Ativo { get; private set; }
+        public ICollection<Avaliacao> Avaliacoes { get; private set; } = new List<Avaliacao>();
+
+        // Método para calcular média de avaliações
+        public decimal MediaAvaliacoes => (decimal)(Avaliacoes.Any()
+            ? Math.Round(Avaliacoes.Where(a => a.Aprovada).Average(a => a.Nota), 1) : 0);
+
+        // Método para contar avaliações
+        public int TotalAvaliacoes => Avaliacoes.Count(a => a.Aprovada);
 
         //Contrutor para Entity Framework
         private Produto() { }
@@ -59,7 +67,7 @@
                 throw new InvalidOperationException("Estoque insuficiente.");
 
             QuantidadeEstoque -= quantidade;
-        }
+        }      
 
         public void Ativar() => Ativo = true;
         public void Desativar() => Ativo = false;
@@ -75,5 +83,6 @@
             if (QuantidadeEstoque < 0)
                 throw new ArgumentException("A quantidade em estoque não pode ser negativa.");
         }
+      
     }
 }
