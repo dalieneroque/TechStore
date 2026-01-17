@@ -17,8 +17,10 @@ namespace TechStore.Infrastructure.Data
         public DbSet<ItemPedido> ItensPedido { get; set; }
         public DbSet<Carrinho> Carrinhos { get; set; }
         public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
+        public DbSet<Avaliacao> Avaliacoes { get; set; }
+        public DbSet<Favorito> Favoritos { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder) // Ensina ao EF Core como as entidades se relacionam no banco de dados
         {
             base.OnModelCreating(modelBuilder);
 
@@ -28,7 +30,7 @@ namespace TechStore.Infrastructure.Data
                 .HasOne(p => p.Categoria)
                 .WithMany(c => c.Produtos)
                 .HasForeignKey(p => p.CategoriaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Pedido>()
                 .HasMany(p => p.Itens)
@@ -40,7 +42,7 @@ namespace TechStore.Infrastructure.Data
                 .HasOne(i => i.Produto)
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Carrinho>()
                 .HasOne(c => c.Usuario)
@@ -59,6 +61,35 @@ namespace TechStore.Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Avaliacao>() //Configura a entidade Avaliacao
+                .HasOne(a => a.Produto)     // Uma Avaliacao tem um Produto
+                .WithMany(p => p.Avaliacoes) // Um Produto tem muitas Avaliacoes
+                .HasForeignKey(a => a.ProdutoId) // Chave estrangeira esta em Avaliacao
+                .OnDelete(DeleteBehavior.Cascade); // Se o Produto for deletado, todas as Avaliacoes relacionadas também serão deletadas
+
+            modelBuilder.Entity<Avaliacao>()
+                .HasOne(a => a.Usuario) 
+                .WithMany() 
+                .HasForeignKey(a => a.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict); // Não permite deletar um usuário se ele tiver avaliações
+
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.Usuario)
+                .WithMany()
+                .HasForeignKey(f => f.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.Produto)
+                .WithMany()
+                .HasForeignKey(f => f.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Garantir que um usuário não possa favoritar o mesmo produto duas vezes
+            modelBuilder.Entity<Favorito>()
+                .HasIndex(f => new { f.UsuarioId, f.ProdutoId }) 
+                .IsUnique(); 
 
         }
     }
