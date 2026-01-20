@@ -13,6 +13,12 @@ namespace TechStore.Core.Entities
         public DateTime? DataEnvio { get; private set; }
         public DateTime? DataEntrega { get; private set; }
 
+        // Cupom aplicado
+        public int? CupomId { get; private set; }
+        public Cupom Cupom { get; private set; }
+        public decimal ValorDesconto { get; private set; }
+        public decimal ValorFinal => ValorTotal - ValorDesconto;
+
         // Status do pedido
         public string Status { get; private set; }
         public decimal ValorTotal { get; private set; }
@@ -33,7 +39,10 @@ namespace TechStore.Core.Entities
             ValorTotal = 0;
             Observacoes = observacoes;
             EnderecoEntrega = enderecoEntrega;
+            ValorDesconto = 0;
         }
+
+
 
         // Métodos de domínio
         public void AdicionarItem(Produto produto, int quantidade, decimal precoUnitario)
@@ -93,6 +102,19 @@ namespace TechStore.Core.Entities
                 // Aqui precisaríamos do repositório de produtos
                 // Para simplificar, apenas marcamos que precisa devolver
             }
+        }
+
+        // método para aplicar cupom
+        public void AplicarCupom(Cupom cupom)
+        {
+            if (!cupom.PodeSerUtilizado(ValorTotal))
+                throw new InvalidOperationException($"Cupom {cupom.Codigo} não pode ser utilizado");
+
+            CupomId = cupom.Id;
+            ValorDesconto = cupom.CalcularDesconto(ValorTotal);
+
+            // Utilizar o cupom
+            cupom.Utilizar();
         }
     }
 }

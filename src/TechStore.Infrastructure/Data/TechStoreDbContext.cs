@@ -19,6 +19,8 @@ namespace TechStore.Infrastructure.Data
         public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
         public DbSet<Avaliacao> Avaliacoes { get; set; }
         public DbSet<Favorito> Favoritos { get; set; }
+        public DbSet<Cupom> Cupons { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) // Ensina ao EF Core como as entidades se relacionam no banco de dados
         {
@@ -89,7 +91,22 @@ namespace TechStore.Infrastructure.Data
             // Garantir que um usuário não possa favoritar o mesmo produto duas vezes
             modelBuilder.Entity<Favorito>()
                 .HasIndex(f => new { f.UsuarioId, f.ProdutoId }) 
-                .IsUnique(); 
+                .IsUnique();
+         
+            modelBuilder.Entity<Cupom>(entity =>
+            {
+                entity.HasIndex(c => c.Codigo).IsUnique();
+                entity.Property(c => c.Codigo).IsRequired().HasMaxLength(20);
+                entity.Property(c => c.Descricao).HasMaxLength(200);
+                entity.Property(c => c.Valor).HasPrecision(18, 2);
+                entity.Property(c => c.ValorMinimoPedido).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.Cupom)
+                .WithMany()
+                .HasForeignKey(p => p.CupomId)
+                .OnDelete(DeleteBehavior.SetNull); // Se excluir cupom, mantém histórico
 
         }
     }
