@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using TechStore.Application.Interfaces;
 using TechStore.Application.Services;
@@ -102,8 +103,6 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 builder.Services.AddScoped<ICupomService, CupomService>();
 
-
-
 // Registrar AutoMapper
 builder.Services.AddAutoMapper(typeof(TechStore.Application.Mappings.MappingProfile));
 
@@ -140,6 +139,35 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
+    });
+});
+
+// Configuração do Swagger para suportar JWT
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Informe o token JWT"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
     });
 });
 
@@ -185,15 +213,15 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-
-app.UseCors("AllowAll");
-
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
+
+app.UseCors("AllowAll");
 
 app.Run();
 
