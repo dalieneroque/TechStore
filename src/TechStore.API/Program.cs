@@ -14,10 +14,29 @@ using TechStore.Infrastructure.Data;
 using TechStore.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Configurar JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? "MinhaChaveSecretaSuperSeguraComPeloMenos32Caracteres!";
 
+// Configuração do Identity
+builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
+{
+    // Configurações de senha
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+
+    // Configurações de usuário
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
+})
+.AddEntityFrameworkStores<TechStoreDbContext>()
+.AddDefaultTokenProviders();
+
+// Configurar Identity
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -58,26 +77,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<TechStoreDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-// Configuração do Identity
-builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
-{
-    // Configurações de senha
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
-
-    // Configurações de usuário
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = false; 
-})
-.AddEntityFrameworkStores<TechStoreDbContext>()
-.AddDefaultTokenProviders();
-
-
-
 // Registrar repositórios
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
@@ -86,6 +85,7 @@ builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
 builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
+builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 
 // Registrar serviços de aplicação
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
@@ -97,10 +97,6 @@ builder.Services.AddScoped<IPedidoService, PedidoService>();
 builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 builder.Services.AddScoped<IFavoritoService, FavoritoService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
-builder.Services.AddScoped<IFavoritoService, FavoritoService>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 builder.Services.AddScoped<ICupomService, CupomService>();
 
 // Registrar AutoMapper
@@ -213,15 +209,17 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
+
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.UseStaticFiles();
 
-app.UseCors("AllowAll");
+app.MapControllers();
 
 app.Run();
 

@@ -98,6 +98,20 @@ namespace TechStore.API.Controllers
             await _authService.LogoutAsync(usuarioId);
             return Ok(new { mensagem = "Logout realizado com sucesso" });
         }
-        
+
+
+        // GET: api/auth/teste-auth
+        [HttpGet("teste-auth")]
+        [Authorize]
+        public IActionResult TesteAuth()
+        {
+            return Ok(new
+            {
+                Usuario = User.Identity.Name,
+                Claims = User.Claims.Select(c => new { c.Type, c.Value })
+            });
+        }
+
+
     }
 }
