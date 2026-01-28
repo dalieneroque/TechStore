@@ -36,13 +36,15 @@
 * **AutoMapper**
 * **Git & GitHub**
 * **REST API Design**
+* **Blazor**
+* **HTML**
+* **CSS**
 * Padrões de design: Repository, DTO, Dependency Injection
 
 ---
 
 ## Próximos passos 🔜
 
-* Implementar **autenticação JWT**
 * Criar **frontend** e sistema de **carrinho de compras**
 * Adicionar **testes unitários**
 * Entre outros conforme a necessidade e evolução do meu aprendizado
