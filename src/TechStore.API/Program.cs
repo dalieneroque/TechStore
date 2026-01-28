@@ -23,7 +23,7 @@ var secretKey = jwtSettings["SecretKey"] ?? "MinhaChaveSecretaSuperSeguraComPelo
 builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 {
     // Configurações de senha
-    options.Password.RequireDigit = true;
+    options.Password.RequireDigit = true; 
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = false;
@@ -122,20 +122,11 @@ builder.Services.AddAuthorization(options =>
 // Configurar CORS (importante para frontend)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-
-    options.AddPolicy("AllowSpecific", builder =>
-    {
-        builder.WithOrigins("http://localhost:3000", "https://meufrontend.com")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
+    options.AddPolicy("AllowBlazorFrontend",
+        policy => policy.WithOrigins("https://localhost:7258", "http://localhost:5218")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
 });
 
 // Configuração do Swagger para suportar JWT
@@ -209,7 +200,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowBlazorFrontend");
 
 app.UseRouting();
 
