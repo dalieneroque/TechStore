@@ -1,7 +1,122 @@
 ﻿@page "/"
+@using TechStore.Application.DTOs
+@inject HttpClient Http
 
-<PageTitle>Home</PageTitle>
+<PageTitle>TechStore - Loja de Tecnologia</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container mt-4">
+    <div class="jumbotron">
+        <h1 class="display-4">🛒 TechStore</h1>
+        <p class="lead">Loja virtual de produtos de tecnologia</p>
+    </div>
 
-Welcome to your new app.
+    @if (produtos != null)
+    {
+        <div class="alert alert-success">
+            <h4>✅ API CONECTADA COM SUCESSO!</h4>
+            <p>Produtos carregados: <strong>@produtos.Count</strong></p>
+        </div>
+
+        <h3>Produtos em Destaque</h3>
+        <div class="row">
+            @foreach (var produto in produtos.Take(3))
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">
+                                <span class="badge bg-primary">R$ @produto.Preco.ToString("N2")</span>
+                                <span class="badge bg-secondary ms-1">Estoque: @produto.QuantidadeEstoque</span>
+                            </p>
+                            @if (!string.IsNullOrEmpty(produto.Descricao))
+                            {
+                                <p class="small text-muted">
+                                    @produto.Descricao.Substring(0, Math.Min(80, produto.Descricao.Length))...
+                                </p>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-success">
+                                <i class="bi bi-cart-plus"></i> Carrinho
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary ms-1">
+                                <i class="bi bi-heart"></i> Favoritar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-4">
+            <a href="/produtos" class="btn btn-primary">
+                <i class="bi bi-grid"></i> Ver Todos os Produtos (@produtos.Count)
+            </a>
+            <a href="/categorias" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-tags"></i> Ver Categorias
+            </a>
+        </div>
+    }
+    else if (erro != null)
+    {
+        <div class="alert alert-danger">
+            <h4><i class="bi bi-x-circle"></i> ERRO NA CONEXÃO COM API</h4>
+            <p><strong>@erro</strong></p>
+
+            <div class="mt-3">
+                <h5>🛠️ Solução de Problemas:</h5>
+                <ol>
+                    <li>
+                        <strong>Sua API está rodando?</strong><br />
+                        Execute o projeto <code>TechStore.API</code> primeiro
+                    </li>
+                    <li>
+                        <strong>CORS configurado?</strong><br />
+                        No <code>Program.cs</code> da API, adicione:<br />
+                        <pre class="bg-dark text-light p-2"><code>builder.Services.AddCors(...);
+    app.UseCors("AllowBlazorFrontend");</code></pre>
+                    </li>
+                    <li>
+                        <strong>Portas corretas?</strong><br />
+                        Verifique as portas nos consoles
+                    </li>
+                </ol>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-3">Conectando com a API TechStore...</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ProdutoDTO>? produtos;
+    private string? erro;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500); // Pequeno delay para ver o loading
+
+        try
+        {
+            produtos = await Http.GetFromJsonAsync<List<ProdutoDTO>>("api/produtos");
+        }
+        catch (HttpRequestException httpEx)
+        {
+            erro = $"Falha ao conectar com API: {httpEx.Message}";
+            if (httpEx.StatusCode.HasValue)
+                erro += $" (Status: {httpEx.StatusCode})";
+        }
+        catch (Exception ex)
+        {
+            erro = $"Erro: {ex.Message}";
+        }
+    }
+}
