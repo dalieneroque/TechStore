@@ -1,16 +1,34 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<!-- NAVBAR -->
+<div class="bg-dark text-white p-3 shadow">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <a href="/" class="text-white fw-bold text-decoration-none fs-4">
+            💻 TechStore
+        </a>
+
+        <!-- MENU -->
+        <div class="d-flex gap-3">
+            <a href="/" class="text-white text-decoration-none"> <i class="bi bi-house"></i> Início</a>
+            <a href="/produtos" class="text-white text-decoration-none"> <i class="bi bi-grid"></i> Produtos</a>
+            <a href="/carrinho" class="text-white text-decoration-none"> <i class="bi bi-cart"></i> Carrinho</a>
+            <a href="/login" class="text-white text-decoration-none"> <i class="bi bi-person"></i> Entrar</a>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    </div>
 </div>
+
+    <!-- CONTEÚDO PRINCIPAL --> 
+    <main class="container mt-4">
+        @Body
+    </main>
+
+    <!-- RODAPÉ SIMPLES -->
+    <footer class="footer mt-5 py-3 bg-light border-top">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                &copy; 2026 TechStore - Desenvolvedora Daliene Roque 
+            </p>
+        </div>
+    </footer>
