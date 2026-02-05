@@ -1,345 +1,53 @@
 ﻿@page "/login"
-
-@using TechStore.Application.DTOs
-@using TechStore.Application.Services
-@using System.Net.Http
+@using TechStore.Web.Services
+@inject AuthService Auth
 @inject NavigationManager Navigation
-@inject AuthService AuthService
-@inject HttpClient Http
 
-<PageTitle>TechStore - Login</PageTitle>
+<h3 class="mb-3">Entrar</h3>
 
-<style>
-    body {
-        background: linear-gradient(135deg, #0d6efd10, #ffffff);
-    }
+<div class="card p-4 shadow-sm" style="max-width: 400px;">
+    <input class="form-control mb-2"
+           placeholder="Email"
+           @bind="email" />
 
-    .login-container {
-        min-height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    <input class="form-control mb-3"
+           type="password"
+           placeholder="Senha"
+           @bind="senha" />
 
-    .login-card {
-        border: none;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
+    <button class="btn btn-dark w-100" @onclick="Entrar">
+        Entrar
+    </button>
 
-    .login-header {
-        background: #0d6efd;
-        padding: 25px;
-        text-align: center;
-        color: white;
-    }
-
-        .login-header h4 {
-            margin: 0;
-            font-weight: 600;
-        }
-
-    .section-divider {
-        text-align: center;
-        margin: 25px 0;
-        font-size: 14px;
-        color: #888;
-    }
-
-    .btn-modern {
-        border-radius: 10px;
-        padding: 10px;
-        font-weight: 500;
-    }
-
-    .alert-message {
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-
-    .field-required::after {
-        content: " *";
-        color: #dc3545;
-    }
-
-    .form-note {
-        font-size: 12px;
-        color: #666;
-        margin-top: 4px;
-    }
-</style>
-
-<div class="login-container">
-    <div class="col-md-8 col-lg-6">
-        <div class="card login-card">
-
-            <div class="login-header">
-                <h4><i class="bi bi-person-circle"></i> Bem-vindo à TechStore</h4>
-                <p class="mb-0">Loja de produtos de tecnologia</p>
-            </div>
-
-            <div class="card-body p-4">
-
-                <!-- MENSAGEM DE ERRO/SUCESSO -->
-                @if (!string.IsNullOrEmpty(mensagem))
-                {
-                    <div class="alert @(mensagemTipo == "sucesso" ? "alert-success" : "alert-danger") alert-message">
-                        <i class="bi @(mensagemTipo == "sucesso" ? "bi-check-circle" : "bi-exclamation-triangle") me-2"></i>
-                        @mensagem
-                    </div>
-                }
-
-                <!-- LOGIN -->
-                <h5 class="mb-3">Entrar na sua conta</h5>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Email</label>
-                    <input type="email" class="form-control" placeholder="exemplo@email.com"
-                           @bind="loginEmail"
-                           @onkeyup="@(e => { if (e.Key == "Enter") FazerLogin(); })" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Senha</label>
-                    <input type="password" class="form-control" placeholder="Sua senha"
-                           @bind="loginSenha"
-                           @onkeyup="@(e => { if (e.Key == "Enter") FazerLogin(); })" />
-                </div>
-
-                <button class="btn btn-primary w-100 btn-modern"
-                        @onclick="FazerLogin"
-                        disabled="@carregando">
-                    @if (carregando && !modoRegistro)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        <span>Entrando...</span>
-                    }
-                    else
-                    {
-                        <i class="bi bi-box-arrow-in-right"></i>
-                        <span>Entrar</span>
-                    }
-                </button>
-
-                <div class="section-divider">
-                    — ou —
-                </div>
-
-                <!-- REGISTRO -->
-                <h5 class="mb-3">Criar nova conta</h5>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Nome completo</label>
-                    <input type="text" class="form-control"
-                           placeholder="Seu nome completo"
-                           @bind="registrarNomeCompleto" />
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label field-required">CPF</label>
-                        <input type="text" class="form-control cpf-mask"
-                               placeholder="000.000.000-00"
-                               @bind="registrarCPF"
-                               maxlength="14" />
-                        <div class="form-note">Apenas números</div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label field-required">Data de Nascimento</label>
-                        <input type="date" class="form-control"
-                               @bind="registrarDataNascimento"
-                               max="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Email</label>
-                    <input type="email" class="form-control"
-                           placeholder="seu@email.com"
-                           @bind="registrarEmail" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Senha</label>
-                    <input type="password" class="form-control"
-                           placeholder="Mínimo 6 caracteres"
-                           @bind="registrarSenha" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label field-required">Confirmar Senha</label>
-                    <input type="password" class="form-control"
-                           placeholder="Digite a senha novamente"
-                           @bind="registrarConfirmarSenha"
-                           @onkeyup="@(e => { if (e.Key == "Enter") FazerRegistro(); })" />
-                </div>
-
-                <button class="btn btn-outline-primary w-100 btn-modern"
-                        @onclick="FazerRegistro"
-                        disabled="@carregando">
-                    @if (carregando && modoRegistro)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        <span>Criando conta...</span>
-                    }
-                    else
-                    {
-                        <i class="bi bi-person-plus"></i>
-                        <span>Criar Conta</span>
-                    }
-                </button>
-
-            </div>
+    @if (!string.IsNullOrEmpty(erro))
+    {
+        <div class="alert alert-danger mt-3">
+            @erro
         </div>
-
-        <div class="text-center mt-3">
-            <a href="/" class="text-decoration-none">
-                <i class="bi bi-arrow-left"></i> Voltar para loja
-            </a>
-            <div class="mt-2">
-                <small class="text-muted">
-                    <i class="bi bi-shield-check"></i> Suas informações estão seguras
-                </small>
-            </div>
-        </div>
-    </div>
+    }
 </div>
 
 @code {
-    // Variáveis para login
-    private string loginEmail = "";
-    private string loginSenha = "";
+    private string email = string.Empty;
+    private string senha = string.Empty;
+    private string erro = string.Empty;
 
-    // Variáveis para registro
-    private string registrarNomeCompleto = "";
-    private string registrarCPF = "";
-    private DateTime registrarDataNascimento = DateTime.Now.AddYears(-18); // 18 anos atrás
-    private string registrarEmail = "";
-    private string registrarSenha = "";
-    private string registrarConfirmarSenha = "";
-
-    // Estado da UI
-    private bool carregando = false;
-    private bool modoRegistro = false;
-    private string? mensagem;
-    private string mensagemTipo = "info";
-
-    // Máscara de CPF (opcional)
-    protected override void OnInitialized()
+    private async Task Entrar()
     {
-        // Inicializa data de nascimento padrão (maior de idade)
-        registrarDataNascimento = new DateTime(DateTime.Now.Year - 18, 1, 1);
-    }
+        erro = string.Empty;
 
-    private async Task FazerLogin()
-    {
-        await ProcessarAutenticacao(async () =>
+        var sucesso = await Auth.LoginAsync(new TechStore.Application.DTOs.LoginDTO
         {
-            var loginDTO = new LoginDTO
-            {
-                Email = loginEmail.Trim(),
-                Senha = loginSenha
-            };
+            Email = email,
+            Senha = senha
+        });
 
-            // Validação básica
-            if (string.IsNullOrWhiteSpace(loginDTO.Email))
-            {
-                mensagem = "Email é obrigatório";
-                mensagemTipo = "erro";
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(loginDTO.Senha))
-            {
-                mensagem = "Senha é obrigatória";
-                mensagemTipo = "erro";
-                return false;
-            }
-
-            var resultado = await AuthService.LoginAsync(loginDTO);
-            return resultado != null && resultado.Sucesso; // Assumindo que AuthResponseDTO tem propriedade Sucesso
-
-        }, false);
-    }
-
-    private async Task FazerRegistro()
-    {
-        await ProcessarAutenticacao(async () =>
+        if (sucesso != null)
         {
-            // Validações básicas
-            if (registrarSenha != registrarConfirmarSenha)
-            {
-                mensagem = "As senhas não conferem";
-                mensagemTipo = "erro";
-                return false;
-            }
-
-            // Remove formatação do CPF
-            var cpfLimpo = new string(registrarCPF.Where(char.IsDigit).ToArray());
-
-            if (cpfLimpo.Length != 11)
-            {
-                mensagem = "CPF deve ter 11 dígitos";
-                mensagemTipo = "erro";
-                return false;
-            }
-
-            var registrarDTO = new RegistrarUsuarioDTO
-            {
-                NomeCompleto = registrarNomeCompleto.Trim(),
-                Email = registrarEmail.Trim(),
-                CPF = cpfLimpo,
-                DataNascimento = registrarDataNascimento,
-                Senha = registrarSenha,
-                ConfirmarSenha = registrarConfirmarSenha
-            };
-
-            var resultado = await AuthService.RegistrarAsync(registrarDTO);
-            return resultado != null && resultado.Sucesso; // Assumindo que AuthResponseDTO tem propriedade Sucesso
-        }, true);
-    }
-
-    private async Task ProcessarAutenticacao(Func<Task<bool>> acao, bool ehRegistro)
-    {
-        try
-        {
-            carregando = true;
-            modoRegistro = ehRegistro;
-            mensagem = null;
-
-            var sucesso = await acao();
-
-            if (sucesso)
-            {
-                mensagem = ehRegistro
-                    ? "🎉 Conta criada com sucesso! Redirecionando..."
-                    : "✅ Login realizado com sucesso!";
-                mensagemTipo = "sucesso";
-
-                // Pequeno delay para mostrar mensagem
-                await Task.Delay(2000);
-
-                // Redireciona para home
-                Navigation.NavigateTo("/", true);
-            }
+            erro = "Email ou senha inválidos.";
+            return;
         }
-        catch (HttpRequestException ex)
-        {
-            mensagem = "🌐 Erro de conexão com o servidor. Verifique se a API está rodando.";
-            mensagemTipo = "erro";
-            Console.WriteLine($"Erro HTTP: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            mensagem = "⚠️ Ocorreu um erro inesperado. Tente novamente.";
-            mensagemTipo = "erro";
-            Console.WriteLine($"Erro: {ex.Message}");
-        }
-        finally
-        {
-            carregando = false;
-        }
+
+        Navigation.NavigateTo("/");
     }
 }
