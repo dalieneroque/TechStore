@@ -101,3 +101,145 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+/* ===== BANNER ===== */
+
+.hero-tech {
+    background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
+    color: #ffffff;
+    padding: 80px 20px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de brilho suave no fundo */
+.hero-tech::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(13,110,253,0.35), transparent 70%);
+}
+
+/* Texto */
+.hero-tech h1 {
+    letter-spacing: 1px;
+}
+
+.hero-tech p {
+    color: #d1d1d1;
+}
+
+/* Botão */
+.hero-tech .btn {
+    border-radius: 40px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Hover no botão */
+.hero-tech .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.5);
+}
+
+
+/* ===== CATEGORIAS ===== */
+
+.categoria-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+    .categoria-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        background-color: #f8f9fa;
+    }
+
+
+
+/* ===== PRODUTOS EM DESTAQUE ===== */
+
+.product-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #ffffff;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+    .product-card img {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    /* Hover no card */
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+    }
+
+        /* Zoom leve na imagem */
+        .product-card:hover img {
+            transform: scale(1.06);
+        }
+
+    /* Badge destaque */
+    .product-card .badge {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        border-radius: 20px;
+        z-index: 1;
+    }
+
+    /* Corpo do card */
+    .product-card .card-body {
+        padding: 18px;
+    }
+
+    /* Nome do produto */
+    .product-card .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    /* Descrição curta */
+    .product-card .text-muted {
+        font-size: 0.85rem;
+    }
+
+    /* Preço */
+    .product-card .price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #198754;
+    }
+
+    /* Botão comprar */
+    .product-card .btn {
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+        /* Hover do botão */
+        .product-card .btn:hover {
+            background-color: #000;
+            transform: scale(1.03);
+        }

@@ -1,22 +1,44 @@
 ﻿<div class="container mb-5">
-    <h2 class="mb-4 text-center">Produtos em Destaque</h2>
+    <h2 class="mb-4 text-center fw-bold">
+        Produtos em Destaque
+    </h2>
 
-    <div class="row">
+    <div class="row g-4">
 
         @for (int i = 0; i < 4; i++)
         {
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="https://via.placeholder.com/200"
-                         class="card-img-top">
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="card h-100 shadow-sm border-0 product-card">
 
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Produto Tech</h5>
-                        <p class="text-success fw-bold">R$ 999,90</p>
+                    <!-- Badge -->
+                    <span class="badge bg-warning text-dark position-absolute m-2">
+                        Destaque
+                    </span>
 
-                        <button class="btn btn-primary w-100">
+                    <!-- Imagem -->
+                    <img src="https://via.placeholder.com/300x200"
+                         class="card-img-top"
+                         alt="Produto Tech">
+
+                    <div class="card-body d-flex flex-column text-center">
+
+                        <h5 class="card-title fw-semibold mb-2">
+                            Produto Tech
+                        </h5>
+
+                        <p class="text-muted small mb-1">
+                            Alta performance e qualidade
+                        </p>
+
+                        <p class="text-success fw-bold fs-5 mb-3">
+                            R$ 999,90
+                        </p>
+
+                        <button class="btn btn-dark mt-auto w-100">
+                            <i class="bi bi-cart-plus me-1"></i>
                             Comprar
                         </button>
+
                     </div>
                 </div>
             </div>

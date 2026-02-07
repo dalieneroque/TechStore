@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Json;
 using TechStore.Application.DTOs;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using TechStore.Web.Auth;
 
 
 namespace TechStore.Web.Services
@@ -10,6 +12,7 @@ namespace TechStore.Web.Services
     {
         private readonly HttpClient _http;
         private readonly ILocalStorageService _localStorage;
+        private readonly JwtAuthenticationStateProvider _authState;
 
         public bool IsAuthenticated { get; private set; }
         public string UserName { get; private set; } = string.Empty;
@@ -17,10 +20,11 @@ namespace TechStore.Web.Services
 
         public event Action? OnAuthChanged;
 
-        public AuthService(HttpClient http, ILocalStorageService localStorage)
+        public AuthService(HttpClient http, ILocalStorageService localStorage, JwtAuthenticationStateProvider authState)
         {
             _http = http;
             _localStorage = localStorage;
+            _authState = authState;
             _ = LoadAuthFromStorage();
         }
 
@@ -71,16 +75,19 @@ namespace TechStore.Web.Services
 
         // Logout
         public async Task LogoutAsync()
-        {
-            await _localStorage.RemoveItemAsync("authToken");
-            await _localStorage.RemoveItemAsync("userName");
-
+        {          
             IsAuthenticated = false;
             UserName = string.Empty;
             Token = string.Empty;
 
             // Remove token do HttpClient
             _http.DefaultRequestHeaders.Authorization = null;
+
+            await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("userName");
+
+            ((JwtAuthenticationStateProvider)_authState)
+                .NotifyUserLogout();
 
             OnAuthChanged?.Invoke();
         }
@@ -98,6 +105,9 @@ namespace TechStore.Web.Services
             // Configura token no HttpClient
             _http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+
+            ((JwtAuthenticationStateProvider)_authState)
+                .NotifyUserAuthentication();
 
             OnAuthChanged?.Invoke();
         }

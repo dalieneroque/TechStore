@@ -1,5 +1,7 @@
 ﻿@using TechStore.Web.Services
 @inherits LayoutComponentBase
+@inject TechStore.Web.Services.AuthService Auth
+@inject NavigationManager Nav
 @inject NavigationManager Navigation
 @inject CarrinhoService Carrinho
 @inject AuthService Auth
@@ -15,16 +17,16 @@
 
         <!-- MENU -->
         <div class="d-flex gap-3">
-            <a href="/" class="text-white text-decoration-none"> <i class="bi bi-house"></i> Início</a>
-            <a href="/produtos" class="text-white text-decoration-none"> <i class="bi bi-grid"></i> Produtos</a>
-            <a href="/carrinho" class="text-white text-decoration-none"> <i class="bi bi-cart"></i> Carrinho
+            <NavLink href="/" class="text-white text-decoration-none"> <i class="bi bi-house"></i> Início</NavLink>
+            <NavLink href="/produtos" class="text-white text-decoration-none"> <i class="bi bi-grid"></i> Produtos</NavLink>
+            <NavLink href="/carrinho" class="text-white text-decoration-none"> <i class="bi bi-cart"></i> Carrinho
                 @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
                 {
                     <span class="badge bg-warning text-dark ms-1">
                         @Carrinho.QuantidadeTotal
                     </span>
                 }
-            </a>
+            </NavLink>
             
             @if (Auth.IsAuthenticated)
             {
@@ -39,7 +41,33 @@
             }
             else
             {
-                <NavLink href="/login" class="text-white text-decoration-none"> <i class="bi bi-person"></i> Entrar</NavLink>
+               <AuthorizeView>
+                    <Authorized>
+                        <div class="dropdown">
+                            <a class="text-white text-decoration-none dropdown-toggle"
+                               href="#"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> Olá, @Auth.UserName
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item text-danger"
+                                            @onclick="Logout">
+                                        <i class="bi bi-box-arrow-right"></i> Sair
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </Authorized>
+
+                    <NotAuthorized>
+                        <NavLink href="/login" class="text-white text-decoration-none"> <i class="bi bi-person"></i> Entrar</NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+
             }
         </div>
 
@@ -71,6 +99,6 @@
     private async Task Logout()
     {
         await Auth.LogoutAsync();
-        Navigation.NavigateTo("/");
+        Nav.NavigateTo("/");
     }
 }
