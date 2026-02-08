@@ -1,6 +1,5 @@
 ﻿@using TechStore.Web.Services
 @inherits LayoutComponentBase
-@inject TechStore.Web.Services.AuthService Auth
 @inject NavigationManager Nav
 @inject NavigationManager Navigation
 @inject CarrinhoService Carrinho
@@ -44,28 +43,21 @@
                <AuthorizeView>
                     <Authorized>
                         <div class="dropdown">
-                            <a class="text-white text-decoration-none dropdown-toggle"
-                               href="#"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> Olá, @Auth.UserName
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <button class="dropdown-item text-danger"
-                                            @onclick="Logout">
-                                        <i class="bi bi-box-arrow-right"></i> Sair
-                                    </button>
-                                </li>
-                            </ul>
+                             <span class="text-white d-flex align-items-center gap-1">
+                                <i class="bi bi-person-circle fs-5"></i>
+                                <span>
+                                    Olá,
+                                    <NavLink href="/login" class="text-white text-decoration-underline">
+                                        Entre
+                                    </NavLink>
+                                    ou
+                                    <NavLink href="/registrar" class="text-white text-decoration-underline">
+                                        Cadastra-se
+                                    </NavLink>
+                                 </span>
+                            </span>                          
                         </div>
-                    </Authorized>
-
-                    <NotAuthorized>
-                        <NavLink href="/login" class="text-white text-decoration-none"> <i class="bi bi-person"></i> Entrar</NavLink>
-                    </NotAuthorized>
+                    </Authorized                   
                 </AuthorizeView>
 
             }

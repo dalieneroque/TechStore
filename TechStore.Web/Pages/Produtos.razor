@@ -1,6 +1,10 @@
 ﻿@page "/produtos"
+@using TechStore.Web.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject CarrinhoService Carrinho
+@inject AuthService Auth
+
 
 <PageTitle>TechStore - Produtos</PageTitle>
 
@@ -66,6 +70,11 @@ else
                             <i class="bi bi-eye"></i> Ver Detalhes
                         </button>
 
+                        <button class="btn btn-outline-success w-100 mt-2"
+                                disabled="@(produto.quantidadeEstoque == 0)"
+                                @onclick="() => AdicionarAoCarrinho(produto.id)">
+                            <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                        </button>
                     </div>
                 </div>
             </div>
@@ -136,4 +145,22 @@ else
     {
         Navigation.NavigateTo($"/produto/{id}");
     }
+
+    private async Task AdicionarAoCarrinho(int produtoId)
+    {
+        if (!Auth.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        var sucesso = await Carrinho.AdicionarItemAsync(produtoId);
+
+        if (!sucesso)
+        {
+            erro = "Não foi possível adicionar o produto ao carrinho.";
+        }
+    }
+
+
 }
