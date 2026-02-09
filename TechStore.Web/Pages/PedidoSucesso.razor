@@ -1,0 +1,26 @@
+﻿@page "/pedido-sucesso"
+
+<section class="container text-center mt-5">
+    <div class="card shadow p-4">
+        <h1 class="text-success fw-bold mb-3">✅ Pedido realizado com sucesso!</h1>
+
+        <p class="lead">
+            Obrigada pela sua compra 💙
+            Seu pedido foi registrado e em breve será processado.
+        </p>
+
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <button class="btn btn-primary"
+                    @onclick="@(() => Navigation.NavigateTo("/produtos"))">
+                Continuar comprando
+            </button>
+
+            <button class="btn btn-outline-secondary"
+                    @onclick="@(() => Navigation.NavigateTo("/"))">
+                Voltar para o início
+            </button>
+        </div>
+    </div>
+</section>
+
+@inject NavigationManager Navigation

@@ -3,6 +3,8 @@
 @inject CarrinhoService carrinho
 @inject NavigationManager Navigation
 @inject AuthService Auth
+@inject PedidoService PedidoService
+
 
 
 <section class="bg-dark text-white p-4 rounded shadow mb-4">
@@ -57,19 +59,98 @@
             </tbody>
         </table>
 
-        <div class="cart-total">
-            Total: <strong>R$ @carrinho.ValorTotal</strong>                         
+        <div class="mt-4 p-4" border rounded shadow-sm">
+            <h5 class="mb-3">Finalizar Pedido</h5>
+
+            <div class="mb-3">
+                <label class="form-label">Endereço de entrega</label>
+                <textarea class="form-control"
+                          rows="3"
+                          placeholder="Informe o endereço completo"
+                          @bind="enderecoEntrega">
+                    </textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Observações (opcional)</label>
+                <textarea class="form-control"
+                          rows="2"
+                          placeholder="Ex: horário de entrega, referência..."
+                          @bind="observacoes">
+                    </textarea>
+            </div>
+
+            @if (!string.IsNullOrEmpty(erro))
+            {
+                <div class="alert alert-danger">
+                    @erro
+                </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <h5 class="mb-0">
+                    Total: <strong>R$ @carrinho.ValorTotal.ToString("N2")</strong>
+                </h5>
+
+                <button class="btn btn-success btn-lg"
+                        @onclick="FinalizarPedido">
+                    Finalizar Pedido
+                </button>
+            </div>
         </div>
     }
 </div>
 
 
 
+
+
 @code {
+    private string enderecoEntrega = string.Empty;
+    private string observacoes = string.Empty;
+    private string? erro;
+
     protected override async Task OnInitializedAsync()
     {
-                    
         await carrinho.LoadCarrinhoAsync();
-    }  
+    }
+
+    private async Task FinalizarPedido()
+    {
+        erro = null;
+
+        if (!Auth.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(enderecoEntrega))
+        {
+            erro = "Informe o endereço de entrega.";
+            return;
+        }
+
+        var pedido = await PedidoService.CriarPedidoAsync(new TechStore.Application.DTOs.CriarPedidoDTO
+        {
+            EnderecoEntrega = enderecoEntrega,
+            Observacoes = observacoes
+        });
+
+        if (pedido == null)
+        {
+            erro = "Erro ao finalizar o pedido. Tente novamente.";
+            return;
+        }
+
+        await PedidoService.CriarPedidoAsync(new TechStore.Application.DTOs.CriarPedidoDTO
+        {
+            EnderecoEntrega = enderecoEntrega,
+            Observacoes = observacoes
+        });
+        await carrinho.LimparCarrinhoAsync();
+        Navigation.NavigateTo("/pedido-sucesso");
+    }
+}
 }
 
