@@ -1,6 +1,5 @@
 ﻿@using TechStore.Web.Services
 @inherits LayoutComponentBase
-@inject NavigationManager Nav
 @inject NavigationManager Navigation
 @inject CarrinhoService Carrinho
 @inject AuthService Auth
@@ -9,10 +8,26 @@
 <div class="bg-dark text-white p-3 shadow">
     <div class="container d-flex justify-content-between align-items-center">
 
-        <!-- LOGO -->
-        <a href="/" class="text-white fw-bold text-decoration-none fs-4">
-            💻 TechStore
-        </a>
+       
+
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <!-- LOGO -->
+            <a href="/" class="text-white fw-bold text-decoration-none fs-4">
+                💻 TechStore
+            </a>
+
+            <!-- BUSCA -->
+            <div class="search-box w-50">
+                <input type="text"
+                       class="form-control form-control-sm"
+                       placeholder="Buscar produtos..."
+                       @bind="termoPesquisa"
+                       @bind:event="oninput"
+                       @onkeydown="OnKeyDown" />
+            </div>
+
+        </div>
 
         <!-- MENU -->
         <div class="d-flex gap-3">
@@ -82,6 +97,17 @@
 
 
 @code {
+    [Inject] NavigationManager NavManager { get; set; }
+     
+    private string termoPesquisa = string.Empty;    
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(termoPesquisa))
+        {
+            NavManager.NavigateTo($"/produtos?search={termoPesquisa}");
+        }
+    }
     protected override void OnInitialized()
     {
         Auth.OnAuthChanged += StateHasChanged;
@@ -91,6 +117,8 @@
     private async Task Logout()
     {
         await Auth.LogoutAsync();
-        Nav.NavigateTo("/");
+        Navigation.NavigateTo("/");
     }
+
+
 }
