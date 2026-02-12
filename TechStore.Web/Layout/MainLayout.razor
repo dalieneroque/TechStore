@@ -44,14 +44,15 @@
             
             @if (Auth.IsAuthenticated)
             {
+                <NavLink class="nav-link text-white" href="/perfil"> <i class="bi bi-person"></i> Perfil</NavLink>
+
+                <NavLink class="nav-link text-white" @onclick="Logout"><i class="bi bi-box-arrow-right"></i>Sair</NavLink>
+
                 <span class="text-light">
                     Olá, @Auth.UserName
                 </span>
 
-                <button class="btn btn-outline-light btn-sm"
-                        @onclick="Logout">
-                    Sair
-                </button>
+                
             }
             else
             {

@@ -1,0 +1,136 @@
+﻿@page "/perfil"
+@using Microsoft.AspNetCore.Authorization
+@using TechStore.Application.DTOs
+@inject TechStore.Web.Services.AuthService AuthService
+@attribute [Authorize]
+
+<div class="container d-flex justify-content-center mt-5">
+
+    <div class="card shadow-lg p-4 rounded-4 perfil-card"
+         style="max-width: 450px; width:100%;">
+
+        <h3 class="text-center mb-4 text-primary fw-bold">
+            <i class="bi bi-shield-lock me-2"></i>
+            Alterar Senha
+        </h3>
+
+        <EditForm Model="model" OnValidSubmit="AlterarSenha">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
+
+            <!-- Senha Atual -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Senha Atual</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <InputText type="password"
+                               class="form-control"
+                               @bind-Value="model.SenhaAtual" />
+                </div>
+            </div>
+
+            <!-- Nova Senha -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Nova Senha</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-key"></i>
+                    </span>
+                    <InputText type="password"
+                               class="form-control"
+                               @bind-Value="model.NovaSenha" />
+                </div>
+            </div>
+
+            <!-- Confirmar Nova Senha -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Confirmar Nova Senha</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-check2-circle"></i>
+                    </span>
+                    <InputText type="password"
+                               class="form-control"
+                               @bind-Value="model.ConfirmarNovaSenha" />
+                </div>
+            </div>
+
+
+            <button type="submit"
+                    class="btn btn-primary w-100 fw-bold rounded-3"
+                    disabled="@carregando">
+
+                @if (carregando)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Alterando...</span>
+                }
+                else
+                {
+                    <span>Atualizar Senha</span>
+                }
+
+            </button>
+
+        </EditForm>
+
+        @if (!string.IsNullOrWhiteSpace(mensagemSucesso))
+        {
+            <div class="alert alert-success mt-3 text-center">
+                <i class="bi bi-check-circle me-2"></i>
+                @mensagemSucesso
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(mensagemErro))
+        {
+            <div class="alert alert-danger mt-3 text-center">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                @mensagemErro
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@code {
+
+    private AlterarSenhaDTO model = new();
+    private string? mensagemSucesso;
+    private string? mensagemErro;
+    private bool carregando = false;
+
+    private async Task AlterarSenha()
+    {
+        mensagemSucesso = null;
+        mensagemErro = null;
+        carregando = true;
+
+        try
+        {
+            var resultado = await AuthService.AlterarSenhaAsync(model);
+
+            if (resultado.Sucesso)
+            {
+                mensagemSucesso = "Senha alterada com sucesso! Faça login novamente.";
+                model = new AlterarSenhaDTO();
+            }
+            else
+            {
+                mensagemErro = resultado.Mensagem;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagemErro = "Erro inesperado ao alterar senha.";
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+}

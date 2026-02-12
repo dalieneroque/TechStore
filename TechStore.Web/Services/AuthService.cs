@@ -128,5 +128,29 @@ namespace TechStore.Web.Services
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             }
         }
+
+        public async Task<(bool Sucesso, string Mensagem)> AlterarSenhaAsync(AlterarSenhaDTO dto)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/auth/alterar-senha", dto);
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, "Senha alterada com sucesso!");
+                }
+                else
+                {
+                    return (false, content);
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Erro: {ex.Message}");
+            }
+        }
+
     }
 }

@@ -324,3 +324,18 @@ td {
     .register-card h3 {
         color: #1f2933;
     }
+
+
+/* ===== Pages/PERFIL ===== */
+
+.perfil-card {
+    width: 100%;
+    max-width: 450px;
+    border: none;
+    background: #ffffff;
+    transition: 0.3s;
+}
+
+    .perfil-card:hover {
+        transform: translateY(-5px);
+    }
