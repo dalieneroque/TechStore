@@ -187,13 +187,39 @@ app.UseStaticFiles(new StaticFileOptions
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    
+    var services = scope.ServiceProvider;
+    
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<Usuario>>();
 
+    //Criar roles se não existirem
     if (!await roleManager.RoleExistsAsync("Cliente"))
         await roleManager.CreateAsync(new IdentityRole("Cliente"));
 
     if (!await roleManager.RoleExistsAsync("Admin"))
         await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+    //Criar usuário admin se não existir
+    var adminEmail = "admin@techstore.com";
+    var admin = await userManager.FindByEmailAsync(adminEmail);
+
+    if (admin == null)
+    {
+        var novoAdmin = new Usuario(
+            "Administrador",
+            adminEmail,
+            "00000000000",
+            DateTime.Now.AddYears(-30)
+        );
+
+        var resultado = await userManager.CreateAsync(novoAdmin, "Admin@123");
+
+        if (resultado.Succeeded)
+        {
+            await userManager.AddToRoleAsync(novoAdmin, "Admin");
+        }
+    }
 }
 
 

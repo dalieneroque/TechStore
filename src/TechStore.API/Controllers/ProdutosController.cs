@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -193,6 +194,7 @@ namespace TechStore.API.Controllers
 
         // POST: api/produtos
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProdutoDTO>> PostProduto(CriarProdutoDTO criarProdutoDTO)
         {
             if (!ModelState.IsValid)
@@ -221,6 +223,7 @@ namespace TechStore.API.Controllers
 
         // POST: api/produtos/filtrar
         [HttpPost("filtrar")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PagedResult<ProdutoDTO>>> FiltrarProdutos(
             [FromBody] ProdutoFiltroDTO filtro,
             [FromQuery] int pageNumber = 1,
@@ -245,6 +248,7 @@ namespace TechStore.API.Controllers
 
         // POST: api/produtos/{id}/upload-imagem
         [HttpPost("{id}/upload-imagem")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UploadImagem(int id, [FromForm] UploadImagemDTO uploadDTO)
         {
             try
@@ -281,6 +285,7 @@ namespace TechStore.API.Controllers
 
         // PUT: api/produtos/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutProduto(int id, AtualizarProdutoDTO atualizarProdutoDTO)
         {
             if (!ModelState.IsValid)
@@ -313,6 +318,7 @@ namespace TechStore.API.Controllers
 
         // PATCH: api/produtos/5/estoque
         [HttpPatch("{id}/estoque")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchEstoque(int id, AtualizarEstoqueDTO atualizarEstoqueDTO)
         {
             try
@@ -336,6 +342,7 @@ namespace TechStore.API.Controllers
 
         // DELETE: api/produtos/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduto(int id)
         {
             try
