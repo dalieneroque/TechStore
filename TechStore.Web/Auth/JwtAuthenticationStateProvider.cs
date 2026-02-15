@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using Intersoft.Crosslight.Mobile;
 using ILocalStorageService = Blazored.LocalStorage.ILocalStorageService;
 
 namespace TechStore.Web.Auth
@@ -28,15 +27,26 @@ namespace TechStore.Web.Auth
 
             var claims = ParseClaimsFromJwt(token);
 
-            var identity = new ClaimsIdentity(claims, "jwt");
+            var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Name, ClaimTypes.Role);
             var user = new ClaimsPrincipal(identity);
 
             return new AuthenticationState(user);
         }
 
-        public void NotifyUserAuthentication()
+        public async Task NotifyUserAuthentication(string token)
         {
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            var claims = ParseClaimsFromJwt(token);
+
+            var authenticatedUser = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    claims,
+                    "jwt",
+                    ClaimTypes.Name,
+                    ClaimTypes.Role
+                ));
+
+            NotifyAuthenticationStateChanged(
+                Task.FromResult(new AuthenticationState(authenticatedUser)));
         }
 
         public void NotifyUserLogout()

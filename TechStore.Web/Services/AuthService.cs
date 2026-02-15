@@ -107,7 +107,7 @@ namespace TechStore.Web.Services
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
             ((JwtAuthenticationStateProvider)_authState)
-                .NotifyUserAuthentication();
+                .NotifyUserAuthentication(Token);
 
             OnAuthChanged?.Invoke();
         }
@@ -126,6 +126,8 @@ namespace TechStore.Web.Services
 
                 _http.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+
+                await _authState.NotifyUserAuthentication(Token);
             }
         }
 

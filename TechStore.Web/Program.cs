@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("https://localhost:7255/")
 });
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 
 

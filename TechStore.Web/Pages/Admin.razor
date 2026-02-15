@@ -1,0 +1,17 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "Admin")]
+
+
+<section class="bg-dark text-white p-4 rounded shadow mb-4"
+    <div class="container text-center">
+        <h1 class="fw-bold">Painel Administrativo</h1>
+        <p class="lead mb-0">Bem-vindo ao painel de gerenciamento de produtos.</p>
+    </div>
+</section>
+
+
+<button class="btn btn-primary">
+    Gerenciar Produtos
+</button>
