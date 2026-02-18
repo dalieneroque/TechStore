@@ -1,10 +1,15 @@
 ﻿@page "/admin"
-@using Microsoft.AspNetCore.Authorization
-
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using TechStore.Application.DTOs
+
+@inject TechStore.Web.Services.ProdutoService ProdutoService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 
-<section class="bg-dark text-white p-4 rounded shadow mb-4"
+
+<section class="bg-dark text-white p-4 rounded shadow mb-4">
     <div class="container text-center">
         <h1 class="fw-bold">Painel Administrativo</h1>
         <p class="lead mb-0">Bem-vindo ao painel de gerenciamento de produtos.</p>
@@ -12,6 +17,128 @@
 </section>
 
 
-<button class="btn btn-primary">
-    Gerenciar Produtos
-</button>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Gerenciamento de Produtos</h5>
+
+        <button class="btn btn-success btn-sm" @onclick="NovoProduto">
+            <i class="bi bi-plus-lg"></i> Novo Produto
+        </button>
+    </div>
+
+    <div class="card-body">
+
+        @if (produtos == null)
+        {
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary"></div>
+                <p class="mt-2">Carregando produtos...</p>
+            </div>
+        }
+        else if (!produtos.Any())
+        {
+            <div class="alert alert-info">
+                Nenhum produto cadastrado.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in produtos)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@p.Nome</td>
+
+                                <td class="text-success fw-bold">
+                                    R$ @p.Preco.ToString("N2")
+                                </td>
+
+                                <td>
+                                    @if (p.QuantidadeEstoque > 10)
+                                    {
+                                        <span class="badge bg-success">
+                                            @p.QuantidadeEstoque
+                                        </span>
+                                    }
+                                    else if (p.QuantidadeEstoque > 0)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            @p.QuantidadeEstoque
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Sem estoque
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+                                    <button class="btn btn-outline-warning btn-sm me-2"
+                                            @onclick="() => EditarProduto(p.Id)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => ExcluirProduto(p.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+@code {
+    private List<ProdutoDTO>? produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        produtos = await ProdutoService.ObterProdutosAdmin();
+    }
+
+    private void NovoProduto()
+    {
+        Navigation.NavigateTo("/admin/novo");
+    }
+
+    private void EditarProduto(int id)
+    {
+        Navigation.NavigateTo($"/admin/editar/{id}");
+    }
+
+    private async Task ExcluirProduto(int id)
+    {
+        var confirmar = await JS.InvokeAsync<bool>(
+            "confirm",
+            "Tem certeza que deseja excluir este produto?"
+        );
+
+        if (confirmar)
+        {
+            await ProdutoService.DeletarProduto(id);
+            produtos = await ProdutoService.ObterProdutosAdmin();
+        }
+    }
+}
+
+
+

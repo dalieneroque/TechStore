@@ -1,0 +1,190 @@
+﻿@page "/admin/editar/{Id:int}"
+@attribute [Authorize(Roles = "Admin")]
+
+@using TechStore.Application.DTOs
+@using Microsoft.AspNetCore.Authorization
+
+@inject TechStore.Web.Services.ProdutoService ProdutoService
+@inject NavigationManager Navigation
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <div class="card shadow border-0 rounded-4">
+
+            <div class="card-header bg-warning text-dark rounded-top-4">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Editar Produto
+                </h5>
+            </div>
+
+            <div class="card-body p-4">
+
+                @if (carregando)
+                {
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-warning"></div>
+                        <p class="mt-2">Carregando produto...</p>
+                    </div>
+                }
+                else if (produto == null)
+                {
+                    <div class="alert alert-danger">
+                        Produto não encontrado.
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="produto" OnValidSubmit="Salvar">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="alert alert-danger" />
+
+                        @if (!string.IsNullOrEmpty(erro))
+                        {
+                            <div class="alert alert-danger">
+                                @erro
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nome</label>
+                            <InputText class="form-control"
+                                       @bind-Value="produto.Nome" />
+                            <ValidationMessage For="@(() => produto.Nome)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Descrição</label>
+                            <InputText class="form-control"
+                                       @bind-Value="produto.Descricao" />
+                            <ValidationMessage For="@(() => produto.Descricao)" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Preço</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="produto.Preco" />
+                                <ValidationMessage For="@(() => produto.Preco)" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Quantidade</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="produto.QuantidadeEstoque" />
+                                <ValidationMessage For="@(() => produto.QuantidadeEstoque)" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">URL da Imagem</label>
+                            <InputText class="form-control"
+                                       @bind-Value="produto.ImagemUrl" />
+                            <ValidationMessage For="@(() => produto.ImagemUrl)" />
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(produto?.ImagemUrl))
+                        {
+                            <div class="card mt-3 border-0 shadow-sm text-center p-3">
+                                <small class="text-muted mb-2 d-block">Pré-visualização</small>
+                                <img src="@produto.ImagemUrl"
+                                     class="img-fluid rounded"
+                                     style="max-height:250px; object-fit:contain;"
+                                     onerror="this.style.display='none'" />
+                            </div>
+                        }
+
+
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    @onclick="Cancelar">
+                                Cancelar
+                            </button>
+
+                            <button type="submit"
+                                    class="btn btn-warning text-dark fw-semibold"
+                                    disabled="@salvando">
+                                <i class="bi bi-check-lg me-1"></i>
+                                @(salvando ? "Salvando..." : "Salvar Alterações")
+                            </button>
+
+                        </div>
+
+                    </EditForm>
+                }
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private AtualizarProdutoDTO? produto;
+    private bool carregando = true;
+    private bool salvando = false;
+    private string? erro;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var produtoDTO = await ProdutoService.GetProdutoByIdAsync(Id);
+
+            if (produtoDTO != null)
+            {
+                produto = new AtualizarProdutoDTO
+                {
+                    Id = produtoDTO.Id,
+                    Nome = produtoDTO.Nome,
+                    Descricao = produtoDTO.Descricao,
+                    Preco = produtoDTO.Preco,
+                    QuantidadeEstoque = produtoDTO.QuantidadeEstoque,
+                    ImagemUrl = produtoDTO.ImagemUrl,
+                    CategoriaId = produtoDTO.CategoriaId,
+                    Ativo = produtoDTO.Ativo
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private async Task Salvar()
+    {
+        try
+        {
+            salvando = true;
+
+            await ProdutoService.AtualizarProduto(produto!.Id, produto);
+
+            Navigation.NavigateTo("/admin");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+        finally
+        {
+            salvando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/admin");
+    }
+}

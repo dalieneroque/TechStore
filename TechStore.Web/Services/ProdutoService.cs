@@ -36,5 +36,38 @@ namespace TechStore.Web.Services
                 return null;
             }
         }
+
+        public async Task<List<ProdutoDTO>> ObterProdutosAdmin() 
+        {
+            return await _http.GetFromJsonAsync<List<ProdutoDTO>>("api/produtos");
+              
+        }
+
+        public async Task CriarProduto(CriarProdutoDTO dto)
+        {
+            var response = await _http.PostAsJsonAsync("api/produtos", dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erro API: {response.StatusCode} - {erro}");
+            }
+        }
+
+        public async Task AtualizarProduto(int id, AtualizarProdutoDTO dto)
+        {
+            var response = await _http.PutAsJsonAsync($"api/produtos/{id}", dto);
+
+            if(!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                throw new Exception(erro);
+            }
+        }
+
+        public async Task DeletarProduto(int id)
+        {
+            await _http.DeleteAsync($"api/produtos/{id}");
+        }
     }
 }
