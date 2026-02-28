@@ -59,6 +59,16 @@
   <li>Tela de confirmação do pedido</li>
 </ul>
 
+<h3>🛠️ Painel de Administrador</h3>
+<ul>
+  <li>Acesso restrito por Role (Admin)</li>
+  <li>Cadastro de novos produtos</li>
+  <li>Edição de nome, descrição, preço, estoque e imagem</li>
+  <li>Exclusão de produtos</li>
+  <li>Integração total com API via DTOs específicos</li>
+  <li>Pré-visualização dinâmica da imagem por URL</li>
+</ul>
+
 <hr />
 
 <h2>📐 Arquitetura</h2>
@@ -121,6 +131,7 @@ TechStore
   <li>✅ Autenticação implementada</li>
   <li>✅ Carrinho de compras</li>
   <li>✅ Busca de produtos</li>
+  <li>✅ Painel Administrador completo</li>
   <li>🚧 Melhorias contínuas</li>
 </ul>
 
@@ -130,17 +141,8 @@ TechStore
 
 <ul>
   <li>
-    Criar a área de <strong>Perfil do Usuário</strong>, permitindo a
-    <strong>troca de senha</strong>. O botão <em>Perfil</em> será exibido
-    apenas quando o usuário estiver logado, posicionado ao lado da opção
-    <em>Sair</em>.
+    Upload real de imagens para produtos
   </li>
-  <li>
-    Implementar o <strong>login de Administrador</strong>, com uma área
-    exclusiva para <strong>gerenciamento de produtos</strong>, permitindo
-    cadastrar, editar e excluir produtos do sistema.
-  </li>
-
   <li>
     Melhorias contínuas na <strong>experiência do usuário (UI/UX)</strong>
     e organização visual da aplicação.
