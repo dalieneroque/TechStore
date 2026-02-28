@@ -339,3 +339,72 @@ td {
     .perfil-card:hover {
         transform: translateY(-5px);
     }
+
+
+/* =====  ===== */
+
+.banner-img {
+    transition: opacity 0.5s ease-in-out;
+}
+
+
+.btn-tech {
+    background: linear-gradient(90deg, #00c853, #00e676);
+    border: none;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+    .btn-tech:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
+    }
+
+
+
+/* ===== MainLayout/FOOTER ===== */
+
+.footer-tech {
+    background: #0f172a;
+    color: #cbd5e1;
+}
+
+.footer-title {
+    color: #00e676;
+    font-weight: bold;
+}
+
+.footer-subtitle {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.footer-text {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+    .footer-links li {
+        margin-bottom: 8px;
+    }
+
+    .footer-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .footer-links a:hover {
+            color: #00e676;
+        }
+
+.footer-bottom {
+    background: #020617;
+    font-size: 14px;
+}

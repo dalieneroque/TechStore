@@ -1,37 +1,36 @@
-﻿<div class="container mb-5">
-    <h2 class="text-center fw-bold mb-4">
-        Categorias
-    </h2>
-
-    <div class="row g-4 text-center">
-
-        <div class="col-6 col-md-3">
-            <div class="categoria-card">
-                <i class="bi bi-laptop fs-2 mb-2"></i>
-                <span>Notebooks</span>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="categoria-card">
-                <i class="bi bi-phone fs-2 mb-2"></i>
-                <span>Smartphones</span>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="categoria-card">
-                <i class="bi bi-gpu-card fs-2 mb-2"></i>
-                <span>Placa de Vídeo</span>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="categoria-card">
-                <i class="bi bi-memory fs-2 mb-2"></i>
-                <span>Memória RAM</span>
-            </div>
-        </div>
-
+﻿<section class="container mb-5">
+    <div class="carousel-container">
+        <img src="@imagens[indiceAtual]"
+             class="img-fluid w-100 rounded shadow-lg banner-img"
+             alt="Banner TechStore">
     </div>
-</div>
+</section>
+
+@code {
+
+    private List<string> imagens = new()
+    {
+        "/NovaPasta/banner-techstore1.png",
+        "/NovaPasta/banner-techstore2.png",
+        "/NovaPasta/banner-techstore3.png"
+    };
+
+    private int indiceAtual = 0;
+    private Timer? timer;
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(TrocarImagem, null, 3000, 3000);
+    }
+
+    private void TrocarImagem(object? state)
+    {
+        indiceAtual = (indiceAtual + 1) % imagens.Count;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

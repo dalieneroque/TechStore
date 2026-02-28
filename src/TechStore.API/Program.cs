@@ -201,7 +201,7 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole("Admin"));
 
     //Criar usuário admin se não existir
-    var adminEmail = "admin@techstore.com";
+    var adminEmail = "admin";
     var admin = await userManager.FindByEmailAsync(adminEmail);
 
     if (admin == null)

@@ -41,8 +41,12 @@ else
                 <div class="card h-100 shadow-sm border-0 produto-card">
 
                     <!-- IMAGEM PLACEHOLDER -->
-                    <img src="https://via.placeholder.com/400x250"
-                         class="card-img-top">
+                    <img src="@(string.IsNullOrEmpty(produto.imagemUrl)
+                                     ? "https://via.placeholder.com/400x250"
+                                     : produto.imagemUrl)"
+                 class="card-img-top"
+                 style="height:250px; object-fit:contain; padding:15px;"
+                 alt="@produto.nome">
 
                     <div class="card-body d-flex flex-column">
 
@@ -103,6 +107,7 @@ else
         public string? descricao { get; set; }
         public decimal preco { get; set; }
         public int quantidadeEstoque { get; set; }
+        public string? imagemUrl { get; set; }
     }
 
     private List<Produto> produtos = new();
