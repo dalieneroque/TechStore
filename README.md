@@ -8,6 +8,10 @@
   arquitetura e organização de código.
 </p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c066e903-556a-46cf-9590-6b51bdf927ec" alt="TechStore GIF">
+</p>
+
 <hr />
 
 <h2>📌 Visão Geral</h2>
