@@ -8,6 +8,10 @@
   arquitetura e organização de código.
 </p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c066e903-556a-46cf-9590-6b51bdf927ec" alt="TechStore GIF">
+</p>
+
 <hr />
 
 <h2>📌 Visão Geral</h2>
@@ -158,12 +162,12 @@ TechStore
   <li>
     GitHub:
     <a href="https://github.com/DalieneRoque" target="_blank">
-      DalieneRoque
+      Daliene Roque
     </a>
   </li>
   <li>
     LinkedIn:
-    <a href="https://www.linkedin.com/in/daliene-nonato-lima-roque-a5b167269/" target="_blank">
+    <a href="https://www.linkedin.com/in/daliene-roque-a5b167269/" target="_blank">
       Daliene Nonato Lima Roque
     </a>
   </li>
