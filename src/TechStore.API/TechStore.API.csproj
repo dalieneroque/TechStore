@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TechStore.Application\TechStore.Application.csproj" />
     <ProjectReference Include="..\TechStore.Infrastructure\TechStore.Infrastructure.csproj" />
+	 <ProjectReference Include="..\TechStore.Core\TechStore.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
