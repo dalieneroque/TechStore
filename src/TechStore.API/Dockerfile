@@ -3,8 +3,8 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore TechStore.sln
-RUN dotnet publish src/TechStore.API/TechStore.API.csproj -c Release -o /app/publish
+RUN dotnet restore TechStore.API.csproj
+RUN dotnet publish TechStore.API.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
