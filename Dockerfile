@@ -10,12 +10,8 @@ COPY ["src/TechStore.Infrastructure/TechStore.Infrastructure.csproj", "src/TechS
 # Restore
 RUN dotnet restore "src/TechStore.API/TechStore.API.csproj"
 
-# Copiar todo o código e arquivos de configuração
+# Copiar todo o código
 COPY src/ ./src/
-
-# IMPORTANTE: Copiar appsettings.json explicitamente
-COPY src/TechStore.API/appsettings.json ./src/TechStore.API/appsettings.json
-COPY src/TechStore.API/appsettings.Production.json ./src/TechStore.API/appsettings.Production.json 2>/dev/null || true
 
 # Publicar
 FROM build AS publish
@@ -29,8 +25,11 @@ WORKDIR /app
 # Copiar os arquivos publicados
 COPY --from=publish /app/publish .
 
-# Garantir que os arquivos de configuração estão presentes
-COPY --from=build /src/src/TechStore.API/appsettings.json ./appsettings.json 2>/dev/null || true
+# Se o appsettings.json não existir, crie um arquivo vazio
+RUN if [ ! -f appsettings.json ]; then echo "{}" > appsettings.json; fi
+
+# Se o appsettings.Production.json não existir, não faz nada
+RUN if [ ! -f appsettings.Production.json ]; then echo "Configuração de produção não encontrada, usando appsettings.json"; fi
 
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:80
