@@ -7,7 +7,7 @@ WORKDIR /src
 
 COPY ["src/TechStore.API/TechStore.API.csproj", "src/TechStore.API/"]
 COPY ["src/TechStore.Application/TechStore.Application.csproj", "src/TechStore.Application/"]
-COPY ["src/TechStore.Domain/TechStore.Domain.csproj", "src/TechStore.Domain/"]
+COPY ["src/TechStore.Core/TechStore.Core.csproj", "src/TechStore.Core/"]
 COPY ["src/TechStore.Infrastructure/TechStore.Infrastructure.csproj", "src/TechStore.Infrastructure/"]
 
 RUN dotnet restore "src/TechStore.API/TechStore.API.csproj"
