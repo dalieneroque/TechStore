@@ -18,7 +18,7 @@ namespace TechStore.Infrastructure.Data
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             var optionsBuilder = new DbContextOptionsBuilder<TechStoreDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
 
             return new TechStoreDbContext(optionsBuilder.Options);
         }

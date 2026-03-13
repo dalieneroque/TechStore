@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(options =>
 
 // Registro ESSENCIAL do DbContext 
 builder.Services.AddDbContext<TechStoreDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registrar repositórios
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
