@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  techstore_api:
+    container_name: techstore_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: techstore_api
+    ports:
+      - "8075:8080"
