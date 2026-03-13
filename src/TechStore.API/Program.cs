@@ -15,6 +15,13 @@ using TechStore.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// IMPORTANTE: Carregar configurações de ambiente (Render)
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables(); // ESSENCIAL para o Render
+
 // Configurar JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? "MinhaChaveSecretaSuperSeguraComPeloMenos32Caracteres!";
@@ -161,8 +168,39 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Configurar porta do Render
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://*:{port}");
+
+// INICIALIZAÇÃO DO BANCO DE DADOS (CORRIGIDO)
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<TechStoreDbContext>();
+
+        // Verifica se o banco existe e pode ser conectado
+        if (context.Database.CanConnect())
+        {
+            await context.Database.MigrateAsync(); // Aplica migrações pendentes
+
+            // Agora sim, verifica as roles
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            // ... resto do seu código
+        }
+        else
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("Banco de dados não disponível. Pulando inicialização de dados.");
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Erro ao inicializar o banco de dados");
+    }
+}
 
 // Configuração do pipeline HTTP
 if (app.Environment.IsDevelopment())
@@ -170,7 +208,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    //app.UseHttpsRedirection();
+}
 
+// Configurar diretório de uploads
 var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
 if (!Directory.Exists(uploadsPath))
 {
