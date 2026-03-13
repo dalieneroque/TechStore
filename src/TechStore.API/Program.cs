@@ -161,6 +161,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
+
 // Configuração do pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
@@ -221,6 +224,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+
 
 
 
