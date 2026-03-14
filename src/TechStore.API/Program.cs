@@ -80,54 +80,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//// Registro ESSENCIAL do DbContext 
-//builder.Services.AddDbContext<TechStoreDbContext>(options =>
-//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-Console.WriteLine("=== INÍCIO DO DIAGNÓSTICO DE CONNECTION STRING ===");
-
-// 1. Tenta ler de todas as formas possíveis
-var conn1 = builder.Configuration.GetConnectionString("DefaultConnection");
-var conn2 = builder.Configuration["ConnectionStrings__DefaultConnection"];
-var conn3 = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-var conn4 = Environment.GetEnvironmentVariable("DATABASE_URL"); // Formato comum no Render
-
-Console.WriteLine($"GetConnectionString('DefaultConnection'): {(conn1 != null ? "ENCONTRADA" : "NÃO encontrada")}");
-if (conn1 != null) Console.WriteLine($"  Valor (início): {conn1[..Math.Min(30, conn1.Length)]}...");
-
-Console.WriteLine($"Configuration['ConnectionStrings__DefaultConnection']: {(conn2 != null ? "ENCONTRADA" : "NÃO encontrada")}");
-
-Console.WriteLine($"Environment.GetEnvironmentVariable('ConnectionStrings__DefaultConnection'): {(conn3 != null ? "ENCONTRADA" : "NÃO encontrada")}");
-
-Console.WriteLine($"Environment.GetEnvironmentVariable('DATABASE_URL'): {(conn4 != null ? "ENCONTRADA" : "NÃO encontrada")}");
-
-// 2. Lista as primeiras variáveis de ambiente disponíveis (para ver o que existe)
-Console.WriteLine("\nPrimeiras 10 variáveis de ambiente disponíveis:");
-var envVars = Environment.GetEnvironmentVariables();
-var count = 0;
-foreach (System.Collections.DictionaryEntry entry in envVars)
-{
-    if (count++ >= 10) break;
-    Console.WriteLine($"  {entry.Key} = {entry.Value?.ToString()?.Substring(0, Math.Min(20, entry.Value?.ToString()?.Length ?? 0))}...");
-}
-
-// 3. Escolhe a primeira connection string válida encontrada
-string? connectionString = conn1 ?? conn2 ?? conn3 ?? conn4;
-
-if (string.IsNullOrEmpty(connectionString))
-{
-    Console.WriteLine("=== FALHA CRÍTICA: NENHUMA CONNECTION STRING ENCONTRADA ===");
-    throw new InvalidOperationException("Nenhuma connection string encontrada. Verifique as variáveis de ambiente no Render.");
-}
-
-Console.WriteLine($"\nConnection string SELECIONADA (origem: {(conn1 != null ? "conn1" : conn2 != null ? "conn2" : conn3 != null ? "conn3" : "conn4")})");
-Console.WriteLine($"=== FIM DO DIAGNÓSTICO ===\n");
-
+// Registro ESSENCIAL do DbContext 
 builder.Services.AddDbContext<TechStoreDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//
 
 // Registrar repositórios
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
