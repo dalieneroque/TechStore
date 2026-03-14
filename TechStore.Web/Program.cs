@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using TechStore.Web;
 using TechStore.Web.Auth;
 using TechStore.Web.Services;
@@ -12,7 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7255/")
+    BaseAddress = new Uri("https://lojatechstore.netlify.app")
 });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();
