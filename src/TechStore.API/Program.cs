@@ -131,7 +131,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorFrontend",
-        policy => policy.WithOrigins("https://localhost:7258", "http://localhost:5218", "https://lojatechstore.netlify.app/")
+        policy => policy.WithOrigins("https://localhost:7258", "http://localhost:5218", "https://lojatechstore.netlify.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
@@ -275,9 +275,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowBlazorFrontend");
-
 app.UseRouting();
+
+app.UseCors("AllowBlazorFrontend");
 
 app.UseAuthentication();
 
