@@ -130,11 +130,21 @@ builder.Services.AddAuthorization(options =>
 // Configurar CORS (importante para frontend)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorFrontend",
-        policy => policy.WithOrigins("https://localhost:7258", "http://localhost:5218", "https://lojatechstore.netlify.app")
+    options.AddPolicy("AllowBlazorFrontend", policy =>
+    {
+        policy.WithOrigins("https://lojatechstore.netlify.app") // produção
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials());
+                        .AllowCredentials();
+    });
+
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("https://localhost:7258", "http://localhost:5218") // desenvolvimento
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
 // Configuração do Swagger para suportar JWT
