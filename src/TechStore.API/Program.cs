@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TechStore.API.Common.Extensions;
 using TechStore.Application.Interfaces;
 using TechStore.Application.Services;
 using TechStore.Core.Entities;
@@ -113,6 +114,7 @@ builder.Services.AddAutoMapper(typeof(TechStore.Application.Mappings.MappingProf
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCustomCors();
 
 // Configurar Autorização
 builder.Services.AddAuthorization(options =>
@@ -127,25 +129,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin", "Cliente"));
 });
 
-// Configurar CORS (importante para frontend)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowBlazorFrontend", policy =>
-    {
-        policy.WithOrigins("https://lojatechstore.netlify.app") // produção
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-    });
 
-    options.AddPolicy("AllowLocalhost", policy =>
-    {
-        policy.WithOrigins("https://localhost:7258", "http://localhost:5218") // desenvolvimento
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
 
 // Configuração do Swagger para suportar JWT
 builder.Services.AddSwaggerGen(c =>
@@ -179,9 +163,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configurar porta do Render
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://*:{port}");
 
 // INICIALIZAÇÃO DO BANCO DE DADOS (CORRIGIDO)
 using (var scope = app.Services.CreateScope())
@@ -222,6 +203,9 @@ if (app.Environment.IsDevelopment())
 else
 {
     //app.UseHttpsRedirection();
+    // Configurar porta do Render
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Urls.Add($"http://*:{port}");
 }
 
 // Configurar diretório de uploads
@@ -287,9 +271,12 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("AllowBlazorFrontend");
+//app.UseCors("AllowBlazorFrontend");
 
 app.UseAuthentication();
+
+// Configurar CORS (importante para frontend)
+app.UseCustomCors(app.Environment);
 
 app.UseAuthorization();
 
