@@ -13,7 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://lojatechstore.netlify.app")
+    BaseAddress = new Uri("https://techstore-1puv.onrender.com/")
 });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();
