@@ -16,18 +16,21 @@ using TechStore.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Porta para Render
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 
-// IMPORTANTE: Carregar configurações de ambiente (Render)
+// Carregar configurações de ambiente Render
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables(); // ESSENCIAL para o Render
+    .AddEnvironmentVariables(); 
 
-// Configurar JWT
+// JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? "MinhaChaveSecretaSuperSeguraComPeloMenos32Caracteres!";
 
-// Configuração do Identity
+// Identity
 builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 {
     // Configurações de senha
@@ -44,7 +47,7 @@ builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 .AddEntityFrameworkStores<TechStoreDbContext>()
 .AddDefaultTokenProviders();
 
-// Configurar Identity
+// JWT Bearer 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,11 +65,10 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"] ?? "TechStoreAPI",
         ValidAudience = jwtSettings["Audience"] ?? "TechStoreClients",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-
-        ClockSkew = TimeSpan.Zero // Remove margem de tempo do token
+        ClockSkew = TimeSpan.Zero 
     };
 
-    // Para desenvolvimento, aceitar tokens no header
+    // Permitir token via query string para WebSockets (SignalR) - apenas para desenvolvimento
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -81,12 +83,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Registro ESSENCIAL do DbContext 
+// DbContext 
 builder.Services.AddDbContext<TechStoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-// Registrar repositórios
+// Repositórios
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
@@ -96,7 +98,7 @@ builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
 builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 
-// Registrar serviços de aplicação
+// Serviços 
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
@@ -108,28 +110,24 @@ builder.Services.AddScoped<IFavoritoService, FavoritoService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ICupomService, CupomService>();
 
-// Registrar AutoMapper
+// AutoMapper
 builder.Services.AddAutoMapper(typeof(TechStore.Application.Mappings.MappingProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// CORS
 builder.Services.AddCustomCors();
 
-// Configurar Autorização
+// Políticas de autorização
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 
-    options.AddPolicy("ClienteOnly", policy =>
-        policy.RequireRole("Cliente"));
+    options.AddPolicy("ClienteOnly", policy => policy.RequireRole("Cliente"));
 
-    options.AddPolicy("AdminOuCliente", policy =>
-        policy.RequireRole("Admin", "Cliente"));
+    options.AddPolicy("AdminOuCliente", policy => policy.RequireRole("Admin", "Cliente"));
 });
-
-
 
 // Configuração do Swagger para suportar JWT
 builder.Services.AddSwaggerGen(c =>
@@ -164,27 +162,36 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 
-// INICIALIZAÇÃO DO BANCO DE DADOS (CORRIGIDO)
+// Inicializar banco de dados e criar roles/usuário admin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<TechStoreDbContext>();
+        await context.Database.MigrateAsync();
+        
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<Usuario>>();
 
-        // Verifica se o banco existe e pode ser conectado
-        if (context.Database.CanConnect())
-        {
-            await context.Database.MigrateAsync(); // Aplica migrações pendentes
+        if (!await roleManager.RoleExistsAsync("Cliente"))
+            await roleManager.CreateAsync(new IdentityRole("Cliente"));
 
-            // Agora sim, verifica as roles
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            // ... resto do seu código
-        }
-        else
+        if (!await roleManager.RoleExistsAsync("Admin"))
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+        var adminEmail = "admin@techstore.com";
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+        if (admin == null)
         {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogWarning("Banco de dados não disponível. Pulando inicialização de dados.");
+            var novoAdmin = new Usuario(
+                "Administrador", adminEmail, "00000000000",
+                DateTime.Now.AddYears(-30));
+            var resultado = await userManager.CreateAsync(novoAdmin, "Admin@123");
+            if (resultado.Succeeded)
+            {
+                await userManager.AddToRoleAsync(novoAdmin, "Admin");
+            }
         }
     }
     catch (Exception ex)
@@ -194,21 +201,14 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configuração do pipeline HTTP
+// Pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    //app.UseHttpsRedirection();
-    // Configurar porta do Render
-    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-    app.Urls.Add($"http://*:{port}");
-}
 
-// Configurar diretório de uploads
+// Uploads 
 var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
 if (!Directory.Exists(uploadsPath))
 {
@@ -218,65 +218,15 @@ if (!Directory.Exists(uploadsPath))
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/Uploads",
-    OnPrepareResponse = ctx =>
-    {
-         ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000");
-    }
+    RequestPath = "/Uploads",    
 });
 
 
-using (var scope = app.Services.CreateScope())
-{
-    
-    var services = scope.ServiceProvider;
-    
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<Usuario>>();
-
-    //Criar roles se não existirem
-    if (!await roleManager.RoleExistsAsync("Cliente"))
-        await roleManager.CreateAsync(new IdentityRole("Cliente"));
-
-    if (!await roleManager.RoleExistsAsync("Admin"))
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-
-    //Criar usuário admin se não existir
-    var adminEmail = "admin";
-    var admin = await userManager.FindByEmailAsync(adminEmail);
-
-    if (admin == null)
-    {
-        var novoAdmin = new Usuario(
-            "Administrador",
-            adminEmail,
-            "00000000000",
-            DateTime.Now.AddYears(-30)
-        );
-
-        var resultado = await userManager.CreateAsync(novoAdmin, "Admin@123");
-
-        if (resultado.Succeeded)
-        {
-            await userManager.AddToRoleAsync(novoAdmin, "Admin");
-        }
-    }
-}
-
-
-
-
-
-app.UseHttpsRedirection();
-
 app.UseRouting();
 
-//app.UseCors("AllowBlazorFrontend");
+app.UseCustomCors(app.Environment);
 
 app.UseAuthentication();
-
-// Configurar CORS (importante para frontend)
-app.UseCustomCors(app.Environment);
 
 app.UseAuthorization();
 
