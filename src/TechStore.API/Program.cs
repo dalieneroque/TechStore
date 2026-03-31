@@ -186,7 +186,7 @@ using (var scope = app.Services.CreateScope())
         {
             var novoAdmin = new Usuario(
                 "Administrador", adminEmail, "00000000000",
-                DateTime.Now.AddYears(-30));
+                DateTime.UtcNow.AddYears(-30));
             var resultado = await userManager.CreateAsync(novoAdmin, "Admin@123");
             if (resultado.Succeeded)
             {

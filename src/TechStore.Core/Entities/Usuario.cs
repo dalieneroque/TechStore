@@ -9,7 +9,7 @@ namespace TechStore.Core.Entities
         public string NomeCompleto { get; protected set; }
         public string CPF { get; protected set; }
         public DateTime DataNascimento { get; protected set; }
-        public DateTime DataCadastro { get; protected set; }
+        public DateTime DataCadastro { get; protected set; } = DateTime.UtcNow;
         public bool Ativo { get; protected set; }
 
         // Método público para EF
