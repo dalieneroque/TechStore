@@ -187,7 +187,7 @@ namespace TechStore.Application.Services
                 ?? throw new Exception("JWT SecretKey não configurada");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"]));
+            var expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"] ?? "60"));
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],
