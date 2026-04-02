@@ -7,14 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\imagens\**" />
-    <Content Remove="wwwroot\imagens\**" />
-    <EmbeddedResource Remove="wwwroot\imagens\**" />
-    <None Remove="wwwroot\imagens\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\NovaPasta\banner-techstore.png" />
+    <Content Remove="wwwroot\imagens\banner-techstore.png" />
   </ItemGroup>
 
   <ItemGroup>
