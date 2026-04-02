@@ -16,10 +16,6 @@ using TechStore.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Porta para Render
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
-
 // Carregar configurações de ambiente Render
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
