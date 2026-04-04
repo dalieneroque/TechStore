@@ -14,12 +14,12 @@ namespace TechStore.Web.Services
 
         public async Task<List<CategoriaDTO>> ObterCategorias()
         {
-            return await _http.GetFromJsonAsync<List<CategoriaDTO>>("api/categorias");
+            return await _http.GetFromJsonAsync<List<CategoriaDTO>>("api/Categorias");
         }
 
         public async Task CriarCategoriaAsync(CriarCategoriaDTO dto)
         {
-            var response = await _http.PostAsJsonAsync("api/categorias", dto);
+            var response = await _http.PostAsJsonAsync("api/Categorias", dto);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception("Erro ao criar categoria");
