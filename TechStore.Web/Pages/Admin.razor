@@ -24,7 +24,13 @@
         <button class="btn btn-success btn-sm" @onclick="NovoProduto">
             <i class="bi bi-plus-lg"></i> Novo Produto
         </button>
+
+        <button class="btn btn-primary btn-sm" @onclick="NovaCategoria">
+            <i class="bi bi-tags"></i> + Categoria
+        </button>
     </div>
+
+    
 
     <div class="card-body">
 
@@ -137,6 +143,11 @@
             await ProdutoService.DeletarProduto(id);
             produtos = await ProdutoService.ObterProdutosAdmin();
         }
+    }
+
+    private void NovaCategoria()
+    {
+        Navigation.NavigateTo("/admin/categorias/nova");
     }
 }
 
