@@ -94,45 +94,47 @@
 </div>
 
     <!-- CONTEÚDO PRINCIPAL --> 
-    <main class="container mt-4">
+<div class="d-flex flex-column min-vh-100">
+    <main class="container mt-4 flex-grow-1">
         @Body
     </main>
 
     <!-- RODAPÉ SIMPLES -->
-    <footer class="footer-tech mt-5">
-    <div class="container py-5">
-        <div class="row">
+        <footer class="footer-tech mt-5">
+        <div class="container py-5">
+            <div class="row">
 
-            <div class="col-md-4">
-                <h4 class="footer-title">TechStore</h4>
-                <p class="footer-text">
-                    Sua loja de tecnologia com os melhores preços,
-                    qualidade e entrega rápida.
-                </p>
+                <div class="col-md-4">
+                    <h4 class="footer-title">TechStore</h4>
+                    <p class="footer-text">
+                        Sua loja de tecnologia com os melhores preços,
+                        qualidade e entrega rápida.
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="footer-subtitle">Links Rápidos</h5>
+                    <ul class="footer-links">
+                        <li><NavLink href="/">Início</NavLink></li>
+                        <li><NavLink href="/produtos">Produtos</NavLink></li>
+                        <li><NavLink href="/carrinho">Carrinho</NavLink></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="footer-subtitle">Contato</h5>
+                    <p class="footer-text">📧 contato@techstore.com</p>
+                    <p class="footer-text">📞 (31) 99999-9999</p>
+                </div>
+
             </div>
-
-            <div class="col-md-4">
-                <h5 class="footer-subtitle">Links Rápidos</h5>
-                <ul class="footer-links">
-                    <li><NavLink href="/">Início</NavLink></li>
-                    <li><NavLink href="/produtos">Produtos</NavLink></li>
-                    <li><NavLink href="/carrinho">Carrinho</NavLink></li>
-                </ul>
-            </div>
-
-            <div class="col-md-4">
-                <h5 class="footer-subtitle">Contato</h5>
-                <p class="footer-text">📧 contato@techstore.com</p>
-                <p class="footer-text">📞 (31) 99999-9999</p>
-            </div>
-
         </div>
-    </div>
 
-    <div class="footer-bottom text-center py-3">
-        © 2026 TechStore - Engenheira de Software Daliene Roque
-    </div>
-</footer>
+        <div class="footer-bottom text-center py-3">
+            © 2026 TechStore - Engenheira de Software Daliene Roque
+        </div>
+    </footer>
+</div>
 
 
 @code {
