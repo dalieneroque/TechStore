@@ -3,12 +3,12 @@
     public class Categoria : BaseEntity
     {
         public string Nome { get; private set; }
-        public string Descricao { get; private set; }
+        public string? Descricao { get; private set; }
         public bool Ativa { get; private set; }
         public ICollection<Produto> Produtos { get; private set; } = new List<Produto>();
 
         // Construtor
-        public Categoria(string nome, string descricao)
+        public Categoria(string nome, string? descricao = null)
         {
             Nome = nome;
             Descricao = descricao;
@@ -16,7 +16,7 @@
         }
 
         // Métodos de domínio
-        public void Atualizar(string nome, string descricao)
+        public void Atualizar(string nome, string? descricao)
         {
             Nome = nome;
             Descricao = descricao;
