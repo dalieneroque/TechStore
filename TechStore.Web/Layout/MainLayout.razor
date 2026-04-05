@@ -5,20 +5,33 @@
 @inject AuthService Auth
 
 <!-- NAVBAR -->
-<div class="bg-dark text-white p-3 shadow">
-    <div class="container d-flex justify-content-between align-items-center">
+<nav class="navbar navbar-dark bg-dark shadow">
+    <div class="container-fluid px-3">
 
-       
+        <!-- LOGO -->
+        <a href="/" class="navbar-brand fw-bold">💻 TechStore</a>
 
-        <div class="container d-flex align-items-center justify-content-between">
+        <!-- BUSCA (visível só em desktop) -->
+        <div class="d-none d-md-flex w-25 mx-3">
+            <input type="text"
+                   class="form-control form-control-sm"
+                   placeholder="Buscar produtos..."
+                   @bind="termoPesquisa"
+                   @bind:event="oninput"
+                   @onkeydown="OnKeyDown" />
+        </div>
 
-            <!-- LOGO -->
-            <a href="/" class="text-white fw-bold text-decoration-none fs-4">
-                💻 TechStore
-            </a>
+        <!-- BOTÃO HAMBURGUER -->
+        <button class="navbar-toggler" type="button"
+                @onclick="ToggleMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <!-- BUSCA -->
-            <div class="search-box w-50">
+        <!-- MENU COLAPSÁVEL -->
+        <div class="@(menuAberto ? "d-block" : "d-none") d-md-flex w-100 w-md-auto mt-2 mt-md-0">
+
+            <!-- BUSCA mobile -->
+            <div class="d-md-none mb-2">
                 <input type="text"
                        class="form-control form-control-sm"
                        placeholder="Buscar produtos..."
@@ -27,92 +40,74 @@
                        @onkeydown="OnKeyDown" />
             </div>
 
-        </div>
+            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 gap-md-3">
+                <NavLink href="/" class="text-white text-decoration-none">
+                    <i class="bi bi-house"></i> Início
+                </NavLink>
+                <NavLink href="/produtos" class="text-white text-decoration-none">
+                    <i class="bi bi-grid"></i> Produtos
+                </NavLink>
+                <NavLink href="/carrinho" class="text-white text-decoration-none">
+                    <i class="bi bi-cart"></i> Carrinho
+                    @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
+                    {
+                        <span class="badge bg-warning text-dark ms-1">
+                            @Carrinho.QuantidadeTotal
+                        </span>
+                    }
+                </NavLink>
 
-        <!-- MENU -->
-        <div class="d-flex gap-3">
-            <NavLink href="/" class="text-white text-decoration-none"> <i class="bi bi-house"></i> Início</NavLink>
-            <NavLink href="/produtos" class="text-white text-decoration-none"> <i class="bi bi-grid"></i> Produtos</NavLink>
-            <NavLink href="/carrinho" class="text-white text-decoration-none"> <i class="bi bi-cart"></i> Carrinho
-                @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
+                @if (Auth.IsAuthenticated)
                 {
-                    <span class="badge bg-warning text-dark ms-1">
-                        @Carrinho.QuantidadeTotal
-                    </span>
+                    <NavLink href="/perfil" class="text-white text-decoration-none">
+                        <i class="bi bi-person"></i> Perfil
+                    </NavLink>
+                    <span class="text-light">Olá, @Auth.UserName</span>
+                    <a href="#" class="text-white text-decoration-none" @onclick="Logout" @onclick:preventDefault>
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
                 }
-            </NavLink>
-            
-            @if (Auth.IsAuthenticated)
-            {
-                <NavLink class="nav-link text-white" href="/perfil"> <i class="bi bi-person"></i> Perfil</NavLink>
+                else
+                {
+                    <NavLink href="/login" class="text-white text-decoration-none">
+                        <i class="bi bi-person-circle"></i> Entrar
+                    </NavLink>
+                    <NavLink href="/registrar" class="text-white text-decoration-none">
+                        Cadastrar-se
+                    </NavLink>
+                }
 
-                <NavLink class="nav-link text-white" @onclick="Logout"><i class="bi bi-box-arrow-right"></i>Sair</NavLink>
-
-                <span class="text-light">
-                    Olá, @Auth.UserName
-                </span>
-
-                
-            }
-            else
-            {
-               <AuthorizeView>
+                <AuthorizeView Roles="Admin">
                     <Authorized>
-                        <div class="dropdown">
-                             <span class="text-white d-flex align-items-center gap-1">
-                                <i class="bi bi-person-circle fs-5"></i>
-                                <span>
-                                    Olá,
-                                    <NavLink href="/login" class="text-white text-decoration-underline">
-                                        Entre
-                                    </NavLink>
-                                    ou
-                                    <NavLink href="/registrar" class="text-white text-decoration-underline">
-                                        Cadastra-se
-                                    </NavLink>
-                                 </span>
-                            </span>                          
-                        </div>
-                    </Authorized                   
-                </AuthorizeView>
-
-            }
-
-            <AuthorizeView Roles="Admin">
-                <Authorized>
-                    <li class="nav-item px-3">
-                        <NavLink class="nav-link" href="/admin">
-                            <span class="bi bi-shield-lock"></span> Painel Admin
+                        <NavLink href="/admin" class="text-white text-decoration-none">
+                            <i class="bi bi-shield-lock"></i> Painel Admin
                         </NavLink>
-                    </li>
-                </Authorized>
-            </AuthorizeView>
-
+                    </Authorized>
+                </AuthorizeView>
+            </div>
         </div>
 
     </div>
-</div>
+</nav>
 
-    <!-- CONTEÚDO PRINCIPAL --> 
+<!-- CONTEÚDO PRINCIPAL -->
 <div class="d-flex flex-column min-vh-100">
     <main class="container mt-4 flex-grow-1">
         @Body
     </main>
 
-    <!-- RODAPÉ SIMPLES -->
-        <footer class="footer-tech mt-5">
+    <!-- RODAPÉ -->
+    <footer class="footer-tech mt-5">
         <div class="container py-5">
-            <div class="row">
-
-                <div class="col-md-4">
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
                     <h4 class="footer-title">TechStore</h4>
                     <p class="footer-text">
                         Sua loja de tecnologia com os melhores preços,
                         qualidade e entrega rápida.
                     </p>
                 </div>
-
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <h5 class="footer-subtitle">Links Rápidos</h5>
                     <ul class="footer-links">
                         <li><NavLink href="/">Início</NavLink></li>
@@ -120,35 +115,35 @@
                         <li><NavLink href="/carrinho">Carrinho</NavLink></li>
                     </ul>
                 </div>
-
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <h5 class="footer-subtitle">Contato</h5>
                     <p class="footer-text">📧 contato@techstore.com</p>
                     <p class="footer-text">📞 (31) 99999-9999</p>
                 </div>
-
             </div>
         </div>
-
         <div class="footer-bottom text-center py-3">
             © 2026 TechStore - Engenheira de Software Daliene Roque
         </div>
     </footer>
 </div>
 
-
 @code {
     [Inject] NavigationManager NavManager { get; set; }
-     
-    private string termoPesquisa = string.Empty;    
+    private string termoPesquisa = string.Empty;
+    private bool menuAberto = false;
+
+    private void ToggleMenu() => menuAberto = !menuAberto;
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(termoPesquisa))
         {
+            menuAberto = false;
             NavManager.NavigateTo($"/produtos?search={termoPesquisa}");
         }
     }
+
     protected override void OnInitialized()
     {
         Auth.OnAuthChanged += StateHasChanged;
@@ -160,6 +155,4 @@
         await Auth.LogoutAsync();
         Navigation.NavigateTo("/");
     }
-
-
 }

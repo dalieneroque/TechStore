@@ -3,12 +3,8 @@
 @inject HttpClient Http
 
 <div class="container mb-5">
-    <h2 class="mb-4 text-center fw-bold">
-        Produtos em Destaque
-    </h2>
-
+    <h2 class="mb-4 text-center fw-bold">Produtos em Destaque</h2>
     <div class="row g-4">
-
         @if (produtos == null || !produtos.Any())
         {
             <p class="text-center">Carregando produtos...</p>
@@ -19,41 +15,26 @@
             {
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="card h-100 shadow-sm border-0 product-card">
-
                         <span class="badge bg-warning text-dark position-absolute m-2">
                             Destaque
                         </span>
-
                         <img src="@(string.IsNullOrEmpty(produto.ImagemUrl)
                                                                  ? "https://via.placeholder.com/300x200"
                                                                  : produto.ImagemUrl)"
                      class="card-img-top"
                      alt="@produto.Nome">
-
-                        <div class="card-body d-flex flex-column text-center">
-
-                            <h5 class="card-title fw-semibold mb-2">
-                                @produto.Nome
-                            </h5>
-
-                            <p class="text-muted small mb-1">
-                                @produto.Descricao
-                            </p>
-
-                            <p class="text-success fw-bold fs-5 mb-3">
-                                R$ @produto.Preco
-                            </p>
-
-                            <button class="btn btn-dark mt-auto w-100">
-                                Comprar
-                            </button>
-
-                        </div>
-                    </div>
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title fw-semibold mb-2">@produto.Nome</h5>
+                    <p class="text-muted small mb-1">@produto.Descricao</p>
+                    <p class="text-success fw-bold fs-5 mb-3">
+                        R$ @produto.Preco.ToString("N2")
+                    </p>
+                    <button class="btn btn-dark mt-auto w-100">Comprar</button>
                 </div>
+            </div>
+        </div>
                 }
         }
-
     </div>
 </div>
 
@@ -62,6 +43,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        produtos = await Http.GetFromJsonAsync<List<ProdutoDTO>>("https://SEU_BACKEND/api/produtos");
+        try
+        {
+            produtos = await Http.GetFromJsonAsync<List<ProdutoDTO>>("api/produtos")
+                ?? new List<ProdutoDTO>();
+        }
+        catch
+        {
+            produtos = new List<ProdutoDTO>();
+        }
     }
 }
