@@ -1,6 +1,9 @@
 ﻿@using System.Linq
 @using TechStore.Application.DTOs
 @inject HttpClient Http
+@inject TechStore.Web.Services.CarrinhoService CarrinhoService
+@inject TechStore.Web.Services.AuthService AuthService
+@inject NavigationManager Navigation
 
 <div class="container mb-5">
     <h2 class="mb-4 text-center fw-bold">Produtos em Destaque</h2>
@@ -29,17 +32,31 @@
                     <p class="text-success fw-bold fs-5 mb-3">
                         R$ @produto.Preco.ToString("N2")
                     </p>
-                    <button class="btn btn-dark mt-auto w-100">Comprar</button>
+
+                    @if (feedbacks.ContainsKey(produto.Id))
+                            {
+                                <div class="alert @(feedbacks[produto.Id] == "ok" ? "alert-success" : "alert-warning") py-1 small">
+                                    @(feedbacks[produto.Id] == "ok" ? "✓ Adicionado!" : "Faça login para comprar")
+                                </div>
+                            }
+
+                            <button class="btn btn-dark mt-auto w-100"
+                                    @onclick="() => Comprar(produto.Id)"
+                                    disabled="@carregando.Contains(produto.Id)">
+                                @(carregando.Contains(produto.Id) ? "Adicionando..." : "Comprar")
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-                }
+            }
         }
     </div>
 </div>
 
 @code {
     private List<ProdutoDTO> produtos = new();
+    private HashSet<int> carregando = new();
+    private Dictionary<int, string> feedbacks = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,5 +69,30 @@
         {
             produtos = new List<ProdutoDTO>();
         }
+    }
+
+    private async Task Comprar(int produtoId)
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            feedbacks[produtoId] = "login";
+            StateHasChanged();
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        carregando.Add(produtoId);
+        StateHasChanged();
+
+        var sucesso = await CarrinhoService.AdicionarItemAsync(produtoId);
+
+        carregando.Remove(produtoId);
+        feedbacks[produtoId] = sucesso ? "ok" : "login";
+        StateHasChanged();
+
+        await Task.Delay(2000);
+        feedbacks.Remove(produtoId);
+        StateHasChanged();
     }
 }
