@@ -22,7 +22,7 @@ namespace TechStore.Application.DTOs
         public string Nome { get; set; }
 
         [StringLength(500, ErrorMessage = "A descrição não pode exceder 500 caracteres")]
-        public string Descricao { get; set; }
+        public string? Descricao { get; set; }
     }
 
     public class AtualizarCategoriaDTO
