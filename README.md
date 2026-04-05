@@ -106,7 +106,7 @@ TechStore
   <li>C# / .NET 8</li>
   <li>ASP.NET Core Web API</li>
   <li>Entity Framework Core</li>
-  <li>SQL Server</li>
+  <li><strong>PostgreSQL</strong> 🐘 (migração realizada a partir do SQL Server)</li>
   <li>AutoMapper</li>
   <li>Swagger / OpenAPI</li>
 </ul>
@@ -127,6 +127,26 @@ TechStore
 
 <hr />
 
+<h2>🧠 Desafios Técnicos</h2>
+
+<ul>
+  <li>
+    Migração de banco de dados de <strong>SQL Server</strong> para <strong>PostgreSQL</strong>,
+    adaptando configurações do Entity Framework Core, tipos de dados e migrations.
+  </li>
+  <li>
+    Implementação de autenticação com JWT, garantindo segurança e controle de acesso.
+  </li>
+  <li>
+    Gerenciamento de estado no Blazor WebAssembly para manter o carrinho sincronizado com o usuário.
+  </li>
+  <li>
+    Separação de responsabilidades utilizando arquitetura em camadas.
+  </li>
+</ul>
+
+<hr />
+
 <h2>📌 Status do Projeto</h2>
 
 <ul>
@@ -136,6 +156,7 @@ TechStore
   <li>✅ Carrinho de compras</li>
   <li>✅ Busca de produtos</li>
   <li>✅ Painel Administrador completo</li>
+  <li>🔄 Migração de banco realizada (SQL Server → PostgreSQL)</li>
   <li>🚧 Melhorias contínuas</li>
 </ul>
 
@@ -144,10 +165,7 @@ TechStore
 <h2>🔜 Próximos Passos</h2>
 
 <ul>
-  <li>
-    Upload real de imagens para produtos
-  </li>
-  <li>
+   <li>
     Melhorias contínuas na <strong>experiência do usuário (UI/UX)</strong>
     e organização visual da aplicação.
   </li>  
@@ -162,13 +180,19 @@ TechStore
   <li>
     GitHub:
     <a href="https://github.com/DalieneRoque" target="_blank">
-      Daliene Roque
+      GitHub - Daliene Roque
     </a>
   </li>
   <li>
     LinkedIn:
     <a href="https://www.linkedin.com/in/daliene-roque-a5b167269/" target="_blank">
-      Daliene Nonato Lima Roque
+      Linkedin - Daliene Roque
+    </a>
+  </li>
+  <li>
+    Portifolio:
+    <a href="https://dalieneroque.github.io/Portifolio/" target="_blank">
+      Site - Daliene Roque
     </a>
   </li>
 </ul>
