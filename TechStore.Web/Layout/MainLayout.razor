@@ -4,90 +4,135 @@
 @inject CarrinhoService Carrinho
 @inject AuthService Auth
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-dark shadow">
+<nav class="navbar navbar-dark bg-dark shadow sticky-top">
     <div class="container-fluid px-3">
 
         <!-- LOGO -->
         <a href="/" class="navbar-brand fw-bold">💻 TechStore</a>
 
-        <!-- BUSCA (visível só em desktop) -->
-        <div class="d-none d-md-flex w-25 mx-3">
+        <!-- BUSCA (só desktop) -->
+        <div class="d-none d-md-flex flex-grow-1 mx-4" style="max-width:400px">
             <input type="text"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm rounded-pill"
                    placeholder="Buscar produtos..."
                    @bind="termoPesquisa"
                    @bind:event="oninput"
                    @onkeydown="OnKeyDown" />
         </div>
 
-        <!-- BOTÃO HAMBURGUER -->
-        <button class="navbar-toggler" type="button"
+        <!-- MENU DESKTOP (só md+) -->
+        <div class="d-none d-md-flex align-items-center gap-3">
+            <NavLink href="/" class="text-white text-decoration-none small">
+                <i class="bi bi-house"></i> Início
+            </NavLink>
+            <NavLink href="/produtos" class="text-white text-decoration-none small">
+                <i class="bi bi-grid"></i> Produtos
+            </NavLink>
+            <NavLink href="/carrinho" class="text-white text-decoration-none small position-relative">
+                <i class="bi bi-cart"></i> Carrinho
+                @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
+                {
+                    <span class="badge bg-warning text-dark ms-1">
+                        @Carrinho.QuantidadeTotal
+                    </span>
+                }
+            </NavLink>
+
+            @if (Auth.IsAuthenticated)
+            {
+                <NavLink href="/perfil" class="text-white text-decoration-none small">
+                    <i class="bi bi-person"></i> @Auth.UserName
+                </NavLink>
+                <a href="#" class="text-white text-decoration-none small"
+                   @onclick="Logout" @onclick:preventDefault>
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+            }
+            else
+            {
+                <NavLink href="/login" class="text-white text-decoration-none small">
+                    <i class="bi bi-person-circle"></i> Entrar
+                </NavLink>
+                <NavLink href="/registrar" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                    Cadastrar-se
+                </NavLink>
+            }
+
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <NavLink href="/admin" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold">
+                        <i class="bi bi-shield-lock-fill"></i> Admin
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        <!-- HAMBURGUER (só mobile) -->
+        <button class="navbar-toggler d-md-none border-0" type="button"
                 @onclick="ToggleMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- MENU COLAPSÁVEL -->
-        <div class="@(menuAberto ? "d-block" : "d-none") d-md-flex w-100 w-md-auto mt-2 mt-md-0">
+    </div>
+
+    <!-- MENU MOBILE -->
+    @if (menuAberto)
+    {
+        <div class="d-md-none bg-dark border-top border-secondary px-3 pb-3">
 
             <!-- BUSCA mobile -->
-            <div class="d-md-none mb-2">
+            <div class="pt-3 pb-2">
                 <input type="text"
-                       class="form-control form-control-sm"
+                       class="form-control form-control-sm rounded-pill"
                        placeholder="Buscar produtos..."
                        @bind="termoPesquisa"
                        @bind:event="oninput"
                        @onkeydown="OnKeyDown" />
             </div>
 
-            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 gap-md-3">
-                <NavLink href="/" class="text-white text-decoration-none">
-                    <i class="bi bi-house"></i> Início
-                </NavLink>
-                <NavLink href="/produtos" class="text-white text-decoration-none">
-                    <i class="bi bi-grid"></i> Produtos
-                </NavLink>
-                <NavLink href="/carrinho" class="text-white text-decoration-none">
-                    <i class="bi bi-cart"></i> Carrinho
-                    @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
-                    {
-                        <span class="badge bg-warning text-dark ms-1">
-                            @Carrinho.QuantidadeTotal
-                        </span>
-                    }
-                </NavLink>
-
-                @if (Auth.IsAuthenticated)
+            <NavLink href="/" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                <i class="bi bi-house"></i> Início
+            </NavLink>
+            <NavLink href="/produtos" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                <i class="bi bi-grid"></i> Produtos
+            </NavLink>
+            <NavLink href="/carrinho" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                <i class="bi bi-cart"></i> Carrinho
+                @if (Auth.IsAuthenticated && Carrinho.QuantidadeTotal > 0)
                 {
-                    <NavLink href="/perfil" class="text-white text-decoration-none">
-                        <i class="bi bi-person"></i> Perfil
-                    </NavLink>
-                    <span class="text-light">Olá, @Auth.UserName</span>
-                    <a href="#" class="text-white text-decoration-none" @onclick="Logout" @onclick:preventDefault>
-                        <i class="bi bi-box-arrow-right"></i> Sair
-                    </a>
+                    <span class="badge bg-warning text-dark ms-1">@Carrinho.QuantidadeTotal</span>
                 }
-                else
-                {
-                    <NavLink href="/login" class="text-white text-decoration-none">
-                        <i class="bi bi-person-circle"></i> Entrar
-                    </NavLink>
-                    <NavLink href="/registrar" class="text-white text-decoration-none">
-                        Cadastrar-se
-                    </NavLink>
-                }
+            </NavLink>
 
-                <AuthorizeView Roles="Admin">
-                    <Authorized>
-                        <NavLink href="/admin" class="text-white text-decoration-none">
-                            <i class="bi bi-shield-lock"></i> Painel Admin
-                        </NavLink>
-                    </Authorized>
-                </AuthorizeView>
-            </div>
+            @if (Auth.IsAuthenticated)
+            {
+                <NavLink href="/perfil" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                    <i class="bi bi-person"></i> @Auth.UserName
+                </NavLink>
+                <a href="#" class="d-block text-danger text-decoration-none py-2 border-bottom border-secondary"
+                   @onclick="Logout" @onclick:preventDefault>
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+            }
+            else
+            {
+                <NavLink href="/login" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                    <i class="bi bi-person-circle"></i> Entrar
+                </NavLink>
+                <NavLink href="/registrar" class="d-block text-white text-decoration-none py-2 border-bottom border-secondary" @onclick="FecharMenu">
+                    Cadastrar-se
+                </NavLink>
+            }
+
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <NavLink href="/admin" class="d-block text-warning text-decoration-none py-2" @onclick="FecharMenu">
+                        <i class="bi bi-shield-lock-fill"></i> Painel Admin
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
         </div>
-
-    </div>
+    }
 </nav>
 
 <!-- CONTEÚDO PRINCIPAL -->
@@ -96,7 +141,6 @@
         @Body
     </main>
 
-    <!-- RODAPÉ -->
     <footer class="footer-tech mt-5">
         <div class="container py-5">
             <div class="row g-4">
@@ -124,7 +168,8 @@
         </div>
         <div class="footer-bottom text-center py-3">
             © 2026 TechStore - Engenheira de Software
-            <a href="https://dalieneroque.github.io/Portifolio/" target="_blank" style="text-decoration: none; color: #0d6efd; font-weight: bold;">
+            <a href="https://dalieneroque.github.io/Portifolio/" target="_blank"
+               style="text-decoration: none; color: #0d6efd; font-weight: bold;">
                 Daliene Roque
             </a>
         </div>
@@ -137,6 +182,7 @@
     private bool menuAberto = false;
 
     private void ToggleMenu() => menuAberto = !menuAberto;
+    private void FecharMenu() => menuAberto = false;
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
