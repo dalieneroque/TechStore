@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TechStore.Infrastructure.Data;
@@ -11,9 +12,11 @@ using TechStore.Infrastructure.Data;
 namespace TechStore.Infrastructure.Migrations
 {
     [DbContext(typeof(TechStoreDbContext))]
-    partial class TechStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405003806_AlterCategoriaDescricaoNullable")]
+    partial class AlterCategoriaDescricaoNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
