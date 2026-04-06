@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c066e903-556a-46cf-9590-6b51bdf927ec" alt="TechStore GIF">
+  <img src="./imagens/banner-techstore.png" alt="TechStore Banner" width="100%">  
 </p>
 
 <hr />
