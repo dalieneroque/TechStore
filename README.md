@@ -1,16 +1,44 @@
-<h1>🛒💻 TechStore</h1>
+<div align="center">
+  <h1>🛒💻 TechStore</h1>
+  <p><strong>Engenheira de Software Daliene Roque</strong></p>
+
+  <img src="./imagens/banner-techstore.png" width="100%">
+</div>
+
+<hr />
 
 <p>
   <strong>TechStore</strong> é uma aplicação completa de <strong>e-commerce</strong>
-  desenvolvida como projeto educacional e profissional, simulando um cenário real
-  de empresa. O projeto integra um <strong>backend robusto em ASP.NET Core</strong>
+  desenvolvida como projeto educacional e profissional, simulando um ambiente real de aplicação corporativa. 
+  O projeto integra um <strong>backend robusto em ASP.NET Core</strong>
   com um <strong>frontend em Blazor WebAssembly</strong>, aplicando boas práticas de
   arquitetura e organização de código.
 </p>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c066e903-556a-46cf-9590-6b51bdf927ec" alt="TechStore GIF">
+<p>
+  Este projeto foi desenvolvido com apoio de ferramentas como IA (ChatGPT),
+  sendo utilizado como um acelerador de aprendizado. Todo o código foi estudado,
+  adaptado e compreendido durante o desenvolvimento.
 </p>
+
+<hr />
+
+<h2>🌐 Deploy</h2>
+
+ <p align="center">
+  <a href="https://lojatechstore.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Acessar%20Projeto-Online-28a745?style=for-the-badge&logo=vercel&logoColor=white">
+  </a>
+</p>
+
+<p>
+  A aplicação está totalmente publicada e acessível online:
+</p>
+
+<ul>
+  <li><strong>Frontend:</strong> Blazor WebAssembly hospedado no Netlify</li>
+  <li><strong>Backend:</strong> API em ASP.NET Core hospedada no Render</li>
+  <li><strong>Banco de Dados:</strong> PostgreSQL em ambiente cloud via Render</li>
+</ul>
 
 <hr />
 
@@ -106,7 +134,7 @@ TechStore
   <li>C# / .NET 8</li>
   <li>ASP.NET Core Web API</li>
   <li>Entity Framework Core</li>
-  <li>SQL Server</li>
+  <li><strong>PostgreSQL</strong> 🐘 (migração realizada a partir do SQL Server)</li>
   <li>AutoMapper</li>
   <li>Swagger / OpenAPI</li>
 </ul>
@@ -127,6 +155,19 @@ TechStore
 
 <hr />
 
+<h2>🧠 Aprendizados</h2>
+
+<ul>
+  <li>Desenvolvimento de APIs REST com ASP.NET Core</li>
+  <li>Estruturação de arquitetura em camadas</li>
+  <li>Integração entre frontend Blazor e backend</li>
+  <li>Uso de Entity Framework Core com PostgreSQL</li>
+  <li>Implementação de autenticação com JWT</li>
+  <li>Deploy de aplicações em ambientes cloud (Render e Netlify)</li>
+</ul>
+
+<hr />
+
 <h2>📌 Status do Projeto</h2>
 
 <ul>
@@ -136,6 +177,7 @@ TechStore
   <li>✅ Carrinho de compras</li>
   <li>✅ Busca de produtos</li>
   <li>✅ Painel Administrador completo</li>
+  <li>🔄 Migração de banco realizada (SQL Server → PostgreSQL)</li>
   <li>🚧 Melhorias contínuas</li>
 </ul>
 
@@ -144,10 +186,7 @@ TechStore
 <h2>🔜 Próximos Passos</h2>
 
 <ul>
-  <li>
-    Upload real de imagens para produtos
-  </li>
-  <li>
+   <li>
     Melhorias contínuas na <strong>experiência do usuário (UI/UX)</strong>
     e organização visual da aplicação.
   </li>  
@@ -158,20 +197,14 @@ TechStore
 
 <h2>✉️ Contato</h2>
 
-<ul>
-  <li>
-    GitHub:
-    <a href="https://github.com/DalieneRoque" target="_blank">
-      Daliene Roque
-    </a>
-  </li>
-  <li>
-    LinkedIn:
-    <a href="https://www.linkedin.com/in/daliene-roque-a5b167269/" target="_blank">
-      Daliene Nonato Lima Roque
-    </a>
-  </li>
-</ul>
+[![LinkedIn](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff)](https://www.linkedin.com/in/daliene-roque-a5b167269/)
+[![GitHub](https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white)](https://github.com/DalieneRoque)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UCzS1CS4ll7-4kWyIwYVhz9w)
+[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white)](https://discord.gg/5EsYDnNDky)
+[![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://www.instagram.com/dalieneroque/)
+[![Linktree](https://img.shields.io/badge/LinkTree-1de9b6?logo=linktree&logoColor=white)](https://linktr.ee/dalieneroque)
+
+<hr />
 
 <p>
   ✨ Este projeto representa minha evolução prática em
