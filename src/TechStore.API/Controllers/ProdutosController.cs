@@ -178,8 +178,6 @@ namespace TechStore.API.Controllers
                 if (produto == null || string.IsNullOrEmpty(produto.ImagemUrl))
                     return NotFound(new { message = "Imagem não encontrada" });
 
-                // Aqui retornaria o arquivo físico
-                // Por enquanto, retornamos a URL
                 return Ok(new
                 {
                     imagemUrl = produto.ImagemUrl,
@@ -253,18 +251,14 @@ namespace TechStore.API.Controllers
         {
             try
             {
-                // Verificar se produto existe
                 var produto = await _produtoService.ObterProdutoPorIdAsync(id);
 
                 if (produto == null)
                     return NotFound(new { message = $"Produto com ID {id} não encontrado" });
 
-                // Validar arquivo
                 if (uploadDTO.Arquivo == null || uploadDTO.Arquivo.Length == 0)
                     return BadRequest(new { message = "Nenhum arquivo enviado" });
 
-                // Aqui você precisaria injetar IFileUploadService no controller
-                // Por enquanto, retornaremos uma mensagem de sucesso simulada
                 return Ok(new
                 {
                     message = "Upload realizado com sucesso (implementação completa requer IFileUploadService)",

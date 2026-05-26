@@ -8,7 +8,7 @@ namespace TechStore.Application.Mappings
     {
         public MappingProfile()
         {
-            // Mapeamento Categoria
+            // Mapeamentos Categoria
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
             CreateMap<CriarCategoriaDTO, Categoria>();
             CreateMap<AtualizarCategoriaDTO, Categoria>();

@@ -28,7 +28,6 @@
 
         public static IApplicationBuilder UseCustomCors(this IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // escolhe automaticamente o ambiente
             if (env.IsDevelopment())
             {
                 app.UseCors("AllowLocalhost");

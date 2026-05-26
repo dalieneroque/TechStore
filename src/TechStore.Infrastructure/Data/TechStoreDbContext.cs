@@ -22,7 +22,7 @@ namespace TechStore.Infrastructure.Data
         public DbSet<Cupom> Cupons { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) // Ensina ao EF Core como as entidades se relacionam no banco de dados
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
             base.OnModelCreating(modelBuilder);
 
@@ -106,7 +106,7 @@ namespace TechStore.Infrastructure.Data
                 .HasOne(p => p.Cupom)
                 .WithMany()
                 .HasForeignKey(p => p.CupomId)
-                .OnDelete(DeleteBehavior.SetNull); // Se excluir cupom, mantém histórico
+                .OnDelete(DeleteBehavior.SetNull); 
 
         }
     }

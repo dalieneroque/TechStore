@@ -58,7 +58,6 @@ namespace TechStore.Application.Services
 
         public async Task<ProdutoDTO> CriarProdutoAsync(CriarProdutoDTO produtoDTO)
         {
-            // Validações de negócio
             if (!await _categoriaRepository.ExistsAsync(produtoDTO.CategoriaId))
                 throw new KeyNotFoundException($"Categoria com ID {produtoDTO.CategoriaId} não encontrada");
 
@@ -77,7 +76,6 @@ namespace TechStore.Application.Services
             if (!salvou)
                 throw new Exception("Não foi possível criar o produto");
 
-            // Retornar produto com informações da categoria
             var produtoCompleto = await _produtoRepository.GetProdutoComCategoriaAsync(produto.Id);
             return _mapper.Map<ProdutoDTO>(produtoCompleto);
         }
@@ -94,7 +92,6 @@ namespace TechStore.Application.Services
             if (!await _categoriaRepository.ExistsAsync(produtoDTO.CategoriaId))
                 throw new KeyNotFoundException($"Categoria com ID {produtoDTO.CategoriaId} não encontrada");
 
-            // Verificar se outro produto já tem este nome na mesma categoria
             var produtoComMesmoNome = await _produtoRepository.FindAsync(p =>
                 p.Nome.ToLower() == produtoDTO.Nome.ToLower() &&
                 p.CategoriaId == produtoDTO.CategoriaId &&
@@ -157,7 +154,6 @@ namespace TechStore.Application.Services
             if (produto == null)
                 throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
 
-            // Soft delete - apenas desativa
             produto.Desativar();
 
             await _produtoRepository.UpdateAsync(produto);
@@ -185,7 +181,6 @@ namespace TechStore.Application.Services
 
         public async Task<IEnumerable<ProdutoDTO>> ObterProdutosEmPromocaoAsync()
         {
-            // Exemplo: produtos com mais de 10% de desconto
             var produtos = await _produtoRepository.GetProdutosAtivosAsync();
             return _mapper.Map<IEnumerable<ProdutoDTO>>(
                 produtos.Where(p => p.Preco < 1000) // Exemplo simples
@@ -194,14 +189,12 @@ namespace TechStore.Application.Services
         }
 
 
-        // NOVO: Método para obter query base (reutilizável)
         private async Task<IQueryable<Produto>> GetBaseQueryAsync(bool incluirCategoria = true)
         {
             var query = await _produtoRepository.GetQueryableAsync();
 
             if (!incluirCategoria)
             {
-                // Se não precisar incluir categoria, refaz a query
                 var produtos = await _produtoRepository.GetAllAsync();
                 return produtos.AsQueryable();
             }
@@ -209,15 +202,12 @@ namespace TechStore.Application.Services
             return query;
         }
 
-        // Método corrigido para paginação
         public async Task<PagedResult<ProdutoDTO>> ObterProdutosPaginadosAsync(PagedRequest request)
         {
             var query = await GetBaseQueryAsync();
 
-            // Aplicar filtro padrão (apenas ativos)
             query = query.Where(p => p.Ativo);
 
-            // Ordenação
             query = request.SortBy?.ToLower() switch
             {
                 "preco" => request.SortDescending ? query.OrderByDescending(p => p.Preco)
@@ -229,17 +219,13 @@ namespace TechStore.Application.Services
                 _ => query.OrderBy(p => p.Nome)
             };
 
-            // Substitua esta linha:
-            // var totalCount = await query.CountAsync();
 
-            // Por esta linha:
             var totalCount = query.Count();
 
-            // Paginação
             var items = query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ToList(); // ToList() já é síncrono porque é IQueryable
+                .ToList(); 
 
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(items);
 
@@ -252,12 +238,10 @@ namespace TechStore.Application.Services
             };
         }
 
-        // Método corrigido para filtros
         public async Task<PagedResult<ProdutoDTO>> FiltrarProdutosAsync(ProdutoFiltroDTO filtro, PagedRequest paginacao)
         {
             var query = await GetBaseQueryAsync();
 
-            // Aplicar filtros
             if (!string.IsNullOrWhiteSpace(filtro.Nome))
             {
                 query = query.Where(p => p.Nome.Contains(filtro.Nome));
@@ -293,7 +277,6 @@ namespace TechStore.Application.Services
                 query = query.Where(p => p.QuantidadeEstoque > 0);
             }
 
-            // Ordenação
             query = filtro.OrdenarPor?.ToLower() switch
             {
                 "preco" => filtro.OrdemDescendente ? query.OrderByDescending(p => p.Preco)
@@ -305,10 +288,8 @@ namespace TechStore.Application.Services
                 _ => query.OrderBy(p => p.Nome)
             };
 
-            // Contagem total (antes da paginação)
             var totalCount = query.Count();
 
-            // Paginação
             var items = query
                 .Skip((paginacao.PageNumber - 1) * paginacao.PageSize)
                 .Take(paginacao.PageSize)

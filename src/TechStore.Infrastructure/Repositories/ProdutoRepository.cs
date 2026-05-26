@@ -54,14 +54,12 @@ namespace TechStore.Infrastructure.Repositories
                            (p.Nome.Contains(searchTerm) ||
                             p.Descricao.Contains(searchTerm)))
                 .Include(p => p.Categoria)
-                .Take(20) // Limitar resultados
+                .Take(20) 
                 .ToListAsync();
         }
 
-        // Adicione estes métodos à classe existente:
         public async Task<IQueryable<Produto>> GetQueryableAsync()
         {
-            // Retorna IQueryable para permitir composição de queries
             return await Task.FromResult(_context.Produtos
                 .Include(p => p.Categoria)
                 .AsQueryable());

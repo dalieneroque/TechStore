@@ -26,15 +26,12 @@ namespace TechStore.Application.Services
 
         public async Task<PedidoDTO> CriarPedidoAsync(string usuarioId, CriarPedidoDTO pedidoDTO)
         {
-            // Obter carrinho
             var carrinho = await _carrinhoRepository.ObterCarrinhoComItensAsync(usuarioId);
             if (carrinho == null || carrinho.EstaVazio)
                 throw new InvalidOperationException("Carrinho vazio. Adicione produtos antes de finalizar.");
 
-            // Criar pedido
             var pedido = new Pedido(usuarioId, pedidoDTO.EnderecoEntrega, pedidoDTO.Observacoes);
 
-            // Transferir itens do carrinho para o pedido
             foreach (var item in carrinho.Itens)
             {
                 var produto = await _produtoRepository.GetByIdAsync(item.ProdutoId);
@@ -44,14 +41,10 @@ namespace TechStore.Application.Services
                 pedido.AdicionarItem(produto, item.Quantidade, item.PrecoUnitario);
             }
 
-            // Salvar pedido
             await _pedidoRepository.AddAsync(pedido);
             await _pedidoRepository.SaveChangesAsync();
-
-            // Limpar carrinho
             await _carrinhoRepository.LimparCarrinhoAsync(usuarioId);
 
-            // Retornar pedido criado
             var pedidoCompleto = await _pedidoRepository.ObterPedidoComItensAsync(pedido.Id);
             return _mapper.Map<PedidoDTO>(pedidoCompleto);
         }
@@ -69,7 +62,6 @@ namespace TechStore.Application.Services
             if (pedido == null)
                 throw new KeyNotFoundException($"Pedido com ID {pedidoId} não encontrado");
 
-            // Verificar se o usuário tem acesso (se fornecido)
             if (usuarioId != null && pedido.UsuarioId != usuarioId)
                 throw new UnauthorizedAccessException("Você não tem permissão para acessar este pedido");
 
@@ -82,12 +74,10 @@ namespace TechStore.Application.Services
             if (pedido == null)
                 throw new KeyNotFoundException($"Pedido com ID {pedidoId} não encontrado");
 
-            // Validações de status
             var statusValidos = new[] { "Pendente", "Pago", "Processando", "Enviado", "Entregue", "Cancelado" };
             if (!statusValidos.Contains(statusDTO.Status))
                 throw new ArgumentException($"Status inválido. Use: {string.Join(", ", statusValidos)}");
 
-            // Cliente só pode cancelar pedidos pendentes
             if (!isAdmin && statusDTO.Status == "Cancelado" && pedido.Status != "Pendente")
                 throw new InvalidOperationException("Só é possível cancelar pedidos pendentes");
 

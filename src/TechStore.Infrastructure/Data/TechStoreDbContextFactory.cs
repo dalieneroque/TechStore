@@ -9,7 +9,6 @@ namespace TechStore.Infrastructure.Data
     {
         public TechStoreDbContext CreateDbContext(string[] args)
         {
-            // Caminho para o appsettings.json
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "TechStore.API"))
                 .AddJsonFile("appsettings.json")

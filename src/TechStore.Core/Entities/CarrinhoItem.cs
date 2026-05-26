@@ -17,7 +17,6 @@
             PrecoUnitario = precoUnitario;
         }
 
-        // Métodos
         public void AdicionarQuantidade(int quantidade)
         {
             if (quantidade <= 0)
@@ -42,7 +41,6 @@
             PrecoUnitario = novoPreco;
         }
 
-        // Construtor privado para EF
         private CarrinhoItem() { }
     }
 }

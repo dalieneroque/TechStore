@@ -16,14 +16,12 @@ namespace TechStore.Core.Entities
         public DateTime DataCriacao { get; private set; }
         public DateTime? DataAtualizacao { get; private set; }
 
-        // Tipos de desconto
         public enum TipoDesconto
         {
-            Porcentagem,  // Ex: 10% de desconto
-            ValorFixo     // Ex: R$ 20,00 de desconto
+            Porcentagem,  
+            ValorFixo     
         }
 
-        // Construtor
         public Cupom(string codigo, string descricao, TipoDesconto tipo, decimal valor, DateTime dataValidade, decimal? valorMinimoPedido = null, int? usosMaximos = null)
         {
             Codigo = codigo;
@@ -38,7 +36,6 @@ namespace TechStore.Core.Entities
             DataCriacao = DateTime.UtcNow;
         }
 
-        // Métodos de domínio
         public decimal CalcularDesconto(decimal valorTotal)
         {
             if (!PodeSerUtilizado(valorTotal))
@@ -92,7 +89,6 @@ namespace TechStore.Core.Entities
             DataAtualizacao = DateTime.UtcNow;
         }
 
-        // Construtor privado para EF
         private Cupom() { }
     }
 }

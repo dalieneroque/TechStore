@@ -12,10 +12,8 @@ namespace TechStore.Core.Entities
         public DateTime DataCadastro { get; protected set; } = DateTime.UtcNow;
         public bool Ativo { get; protected set; }
 
-        // Método público para EF
         public Usuario() { }
 
-        // Endereço (simplificado)
         public string? CEP { get; protected set; }
         public string? Logradouro { get; protected set; }
         public string? Numero { get; protected set; }
@@ -25,10 +23,8 @@ namespace TechStore.Core.Entities
         public string? Estado { get; protected set; }
 
 
-        // Relacionamentos
         public virtual ICollection<Pedido> Pedidos { get; private set; } = new List<Pedido>();
 
-        // Construtor
         public Usuario(string nomeCompleto, string email, string cpf, DateTime dataNascimento)
         {
             NomeCompleto = nomeCompleto;
@@ -38,10 +34,9 @@ namespace TechStore.Core.Entities
             DataNascimento = dataNascimento;
             DataCadastro = DateTime.UtcNow;
             Ativo = true;
-            EmailConfirmed = true; // Para desenvolvimento
+            EmailConfirmed = true; 
         }
 
-        // Métodos de domínio
         public void AtualizarDadosPessoais(string nomeCompleto, string cpf, DateTime dataNascimento)
         {
             NomeCompleto = nomeCompleto;

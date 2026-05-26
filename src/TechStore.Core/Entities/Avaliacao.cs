@@ -14,7 +14,6 @@ namespace TechStore.Core.Entities
         public DateTime DataAvaliacao { get; private set; }
         public bool Aprovada { get; private set; }
 
-        // Construtor
         public Avaliacao(int produtoId, string usuarioId, int nota, string titulo, string comentario)
         {
             ProdutoId = produtoId;
@@ -26,7 +25,6 @@ namespace TechStore.Core.Entities
             Aprovada = false; // Precisa ser aprovada por admin
         }
 
-        // Métodos de domínio
         public void AtualizarAvaliacao(int nota, string titulo, string comentario)
         {
             Nota = nota;
@@ -45,7 +43,6 @@ namespace TechStore.Core.Entities
                 && Comentario.Length <= 1000;
         }
 
-        // Construtor privado para EF
         private Avaliacao() { }
     }
 }

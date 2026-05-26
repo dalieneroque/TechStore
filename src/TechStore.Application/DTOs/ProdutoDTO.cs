@@ -28,7 +28,6 @@ namespace TechStore.Application.DTOs
         [Required(ErrorMessage = "A categoria é obrigatória")]
         public int CategoriaId { get; set; }
 
-        //Para exibir informação da categoria
         public string CategoriaNome { get; set; }
         public bool Ativo { get; set; }
         public DateTime DataCriacao { get; set; }

@@ -32,21 +32,17 @@ namespace TechStore.Application.Services
             if (string.IsNullOrEmpty(extension) || !AllowedExtensions.Contains(extension))
                 throw new ArgumentException($"Extensão não permitida. Use: {string.Join(", ", AllowedExtensions)}");
 
-            // Criar pasta se não existir
             var produtoFolder = Path.Combine(_environment.ContentRootPath, UploadsFolder, "Produtos", produtoId.ToString());
             Directory.CreateDirectory(produtoFolder);
 
-            // Gerar nome único para o arquivo
             var fileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(produtoFolder, fileName);
 
-            // Salvar arquivo
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await arquivo.CopyToAsync(stream);
             }
 
-            // Retornar caminho relativo para salvar no banco
             return $"/{UploadsFolder}/Produtos/{produtoId}/{fileName}";
         }
 

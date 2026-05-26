@@ -13,17 +13,13 @@
         public bool Ativo { get; private set; }
         public ICollection<Avaliacao> Avaliacoes { get; private set; } = new List<Avaliacao>();
 
-        // Método para calcular média de avaliações
         public decimal MediaAvaliacoes => (decimal)(Avaliacoes.Any()
             ? Math.Round(Avaliacoes.Where(a => a.Aprovada).Average(a => a.Nota), 1) : 0);
 
-        // Método para contar avaliações
         public int TotalAvaliacoes => Avaliacoes.Count(a => a.Aprovada);
 
-        //Contrutor para Entity Framework
         private Produto() { }
 
-        //Contrutor principal
         public Produto(string nome, string descricao, decimal preco, int quantidadeEstoque, string imagemUrl, int categoriaId)
         {
             Nome = nome;
@@ -38,7 +34,6 @@
             Validar();
         }
 
-        //Métodos de domínio
         public void Atualizar(string nome, string descricao, decimal preco, string imagemUrl, int categoriaId)
         {
             Nome = nome;

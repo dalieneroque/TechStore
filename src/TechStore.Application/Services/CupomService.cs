@@ -28,16 +28,13 @@ namespace TechStore.Application.Services
 
         public async Task<CupomDTO> CriarCupomAsync(CriarCupomDTO cupomDTO)
         {
-            // Verificar se código já existe
             var cupomExistente = await _cupomRepository.ObterCupomPorCodigoAsync(cupomDTO.Codigo);
             if (cupomExistente != null)
                 throw new InvalidOperationException($"Já existe um cupom com o código '{cupomDTO.Codigo}'");
 
-            // Converter string para enum
             if (!Enum.TryParse<Cupom.TipoDesconto>(cupomDTO.Tipo, out var tipoDesconto))
                 throw new ArgumentException($"Tipo de desconto inválido: {cupomDTO.Tipo}");
 
-            // Criar cupom
             var cupom = new Cupom(
                 cupomDTO.Codigo,
                 cupomDTO.Descricao,
@@ -109,7 +106,6 @@ namespace TechStore.Application.Services
             if (cupom == null)
                 throw new KeyNotFoundException($"Cupom com ID {id} não encontrado");
 
-            // Verificar se novo código já existe (se foi alterado)
             if (cupom.Codigo != cupomDTO.Codigo)
             {
                 var cupomComMesmoCodigo = await _cupomRepository.ObterCupomPorCodigoAsync(cupomDTO.Codigo);
@@ -117,7 +113,6 @@ namespace TechStore.Application.Services
                     throw new InvalidOperationException($"Já existe outro cupom com o código '{cupomDTO.Codigo}'");
             }
 
-            // Atualizar propriedades
             cupom.Atualizar(
                 cupomDTO.Descricao,
                 cupomDTO.ValorMinimoPedido,
@@ -141,7 +136,6 @@ namespace TechStore.Application.Services
             if (cupom == null)
                 throw new KeyNotFoundException($"Cupom com ID {id} não encontrado");
 
-            // Não excluir fisicamente, apenas desativar
             cupom.Desativar();
 
             await _cupomRepository.UpdateAsync(cupom);

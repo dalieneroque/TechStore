@@ -21,7 +21,6 @@ namespace TechStore.Web.Services
             _ = LoadCarrinhoAsync();
         }
 
-        // Carrega carrinho da API
         public async Task LoadCarrinhoAsync()
         {
             if (!_authService.IsAuthenticated)
@@ -68,7 +67,6 @@ namespace TechStore.Web.Services
             }
         }
 
-        // Atualiza quantidade (chama API)
         public async Task<bool> AtualizarQuantidadeAsync(int produtoId, int novaQuantidade)
         {
             if (!_authService.IsAuthenticated)
@@ -92,7 +90,6 @@ namespace TechStore.Web.Services
             }
         }
 
-        // Remove item (chama API)
         public async Task<bool> RemoverItemAsync(int produtoId)
         {
             if (!_authService.IsAuthenticated)
@@ -115,7 +112,6 @@ namespace TechStore.Web.Services
             }
         }
 
-        // Limpa carrinho (chama API)
         public async Task<bool> LimparCarrinhoAsync()
         {
             if (!_authService.IsAuthenticated)

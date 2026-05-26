@@ -18,7 +18,6 @@
             PrecoUnitario = precoUnitario;
         }
 
-        // Construtor privado para EF
         private ItemPedido() { }
 
         public void AtualizarQuantidade(int novaQuantidade)

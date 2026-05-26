@@ -40,7 +40,6 @@ namespace TechStore.Application.Services
 
         public async Task<CategoriaDTO> CriarCategoriaAsync(CriarCategoriaDTO categoriaDTO)
         {
-            // Validações de negócio
             var categoriaExistente = await _categoriaRepository.FindAsync(c =>
                 c.Nome.ToLower() == categoriaDTO.Nome.ToLower());
 
@@ -66,7 +65,6 @@ namespace TechStore.Application.Services
             if (categoria == null)
                 throw new KeyNotFoundException($"Categoria com ID {id} não encontrada");
 
-            // Verificar se outro categoria já tem este nome
             var categoriaComMesmoNome = await _categoriaRepository.FindAsync(c =>
                 c.Nome.ToLower() == categoriaDTO.Nome.ToLower() && c.Id != id);
 
@@ -93,7 +91,6 @@ namespace TechStore.Application.Services
             if (categoria == null)
                 throw new KeyNotFoundException($"Categoria com ID {id} não encontrada");
 
-            // Verificar se existem produtos nesta categoria
             var produtosNaCategoria = await _categoriaRepository.GetCategoriaComProdutosAsync(id);
             if (produtosNaCategoria?.Produtos?.Any() == true)
                 throw new InvalidOperationException(

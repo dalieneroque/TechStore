@@ -18,7 +18,6 @@ namespace TechStore.Application.Interfaces
         Task ExcluirProdutoAsync(int id);
         Task<IEnumerable<ProdutoDTO>> BuscarProdutosAsync(string termo);
 
-        // Novos métodos específicos
         Task<IEnumerable<ProdutoDTO>> ObterProdutosRecentesAsync(int quantidade);
         Task<IEnumerable<ProdutoDTO>> ObterProdutosEmPromocaoAsync();
 

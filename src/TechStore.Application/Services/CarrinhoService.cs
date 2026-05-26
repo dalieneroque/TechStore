@@ -27,14 +27,12 @@ namespace TechStore.Application.Services
         {
             var carrinho = await _carrinhoRepository.ObterCarrinhoComItensAsync(usuarioId);
 
-            // Se não existir, criar um novo
             if (carrinho == null)
             {
                 carrinho = new Carrinho(usuarioId);
                 await _carrinhoRepository.AddAsync(carrinho);
                 await _carrinhoRepository.SaveChangesAsync();
 
-                // Recarregar com includes
                 carrinho = await _carrinhoRepository.ObterCarrinhoComItensAsync(usuarioId);
             }
 
@@ -83,7 +81,6 @@ namespace TechStore.Application.Services
             }
             else
             {
-                // Verificar estoque
                 var produto = await _produtoRepository.GetByIdAsync(itemDTO.ProdutoId);
                 if (produto != null && produto.QuantidadeEstoque < itemDTO.Quantidade)
                     throw new InvalidOperationException($"Estoque insuficiente. Disponível: {produto.QuantidadeEstoque}");

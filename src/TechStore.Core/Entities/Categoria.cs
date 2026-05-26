@@ -7,7 +7,6 @@
         public bool Ativa { get; private set; }
         public ICollection<Produto> Produtos { get; private set; } = new List<Produto>();
 
-        // Construtor
         public Categoria(string nome, string? descricao = null)
         {
             Nome = nome;
@@ -15,7 +14,6 @@
             Ativa = true;
         }
 
-        // Métodos de domínio
         public void Atualizar(string nome, string? descricao)
         {
             Nome = nome;

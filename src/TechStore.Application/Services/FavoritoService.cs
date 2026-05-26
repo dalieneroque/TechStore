@@ -38,22 +38,18 @@ namespace TechStore.Application.Services
 
         public async Task<FavoritoDTO> AdicionarFavoritoAsync(string usuarioId, int produtoId)
         {
-            // Verificar se produto existe
             var produto = await _produtoRepository.GetByIdAsync(produtoId);
             if (produto == null)
                 throw new KeyNotFoundException($"Produto com ID {produtoId} não encontrado");
 
-            // Verificar se já está favoritado
             var jaFavoritado = await _favoritoRepository.ProdutoEstaFavoritadoAsync(usuarioId, produtoId);
             if (jaFavoritado)
                 throw new InvalidOperationException("Produto já está nos favoritos");
 
-            // Adicionar aos favoritos
             var favorito = new Favorito(usuarioId, produtoId);
             await _favoritoRepository.AddAsync(favorito);
             await _favoritoRepository.SaveChangesAsync();
 
-            // Recarregar com includes
             var favoritoCompleto = await _context.Favoritos
                 .Include(f => f.Produto)
                     .ThenInclude(p => p.Categoria)

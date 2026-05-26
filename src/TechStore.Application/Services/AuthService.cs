@@ -46,7 +46,6 @@ namespace TechStore.Application.Services
         {
             try
             {
-                // Verificar se email já existe
                 var usuarioExistente = await _userManager.FindByEmailAsync(registrarDTO.Email);
                 if (usuarioExistente != null)
                 {
@@ -57,7 +56,6 @@ namespace TechStore.Application.Services
                     };
                 }
 
-                // Criar usuário
                 var usuario = new Usuario(
                     registrarDTO.NomeCompleto,
                     registrarDTO.Email,
@@ -76,10 +74,8 @@ namespace TechStore.Application.Services
                     };
                 }
 
-                // Atribuir role padrão (Cliente)
                 await _userManager.AddToRoleAsync(usuario, "Cliente");
 
-                // Gerar token JWT
                 var token = await GerarTokenAsync(usuario);
 
                 return new AuthResponseDTO
@@ -136,7 +132,6 @@ namespace TechStore.Application.Services
                     };
                 }
 
-                // Gerar token JWT
                 var token = await GerarTokenAsync(usuario);
                 var roles = await _userManager.GetRolesAsync(usuario);
 
@@ -175,7 +170,6 @@ namespace TechStore.Application.Services
                 new Claim("cpf", usuario.CPF)
             };
 
-            // Adicionar roles como claims
             var roles = await _userManager.GetRolesAsync(usuario);
             foreach (var role in roles)
             {
@@ -202,8 +196,6 @@ namespace TechStore.Application.Services
 
         public async Task<AuthResponseDTO> RefreshTokenAsync(string token)
         {
-            // Implementação simplificada
-            // Em produção, use refresh tokens separados
             throw new NotImplementedException("Refresh token será implementado na próxima fase");
         }
 
@@ -223,8 +215,6 @@ namespace TechStore.Application.Services
 
         public async Task<bool> LogoutAsync(string usuarioId)
         {
-            // Para JWT stateless, apenas do lado do cliente
-            // Em sistemas stateful, invalidar token aqui
             await _signInManager.SignOutAsync();
             return true;
         }

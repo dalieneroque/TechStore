@@ -17,7 +17,6 @@ namespace TechStore.Core.Entities
             DataAdicao = DateTime.UtcNow;
         }
 
-        // Construtor privado para EF
         private Favorito() { }
     }
 }

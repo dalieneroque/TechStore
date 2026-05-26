@@ -12,25 +12,16 @@ namespace TechStore.Core.Entities
         public DateTime? DataPagamento { get; private set; }
         public DateTime? DataEnvio { get; private set; }
         public DateTime? DataEntrega { get; private set; }
-
-        // Cupom aplicado
         public int? CupomId { get; private set; }
         public Cupom Cupom { get; private set; }
         public decimal ValorDesconto { get; private set; }
         public decimal ValorFinal => ValorTotal - ValorDesconto;
-
-        // Status do pedido
         public string Status { get; private set; }
         public decimal ValorTotal { get; private set; }
         public string Observacoes { get; private set; }
-
-        // Endereço de entrega (poderia ser separado)
         public string EnderecoEntrega { get; private set; }
-
-        // Itens do pedido
         public ICollection<ItemPedido> Itens { get; private set; } = new List<ItemPedido>();
 
-        // Construtor
         public Pedido(string usuarioId, string enderecoEntrega, string observacoes = "")
         {
             UsuarioId = usuarioId;
@@ -42,9 +33,6 @@ namespace TechStore.Core.Entities
             ValorDesconto = 0;
         }
 
-
-
-        // Métodos de domínio
         public void AdicionarItem(Produto produto, int quantidade, decimal precoUnitario)
         {
             if (produto.QuantidadeEstoque < quantidade)
@@ -53,10 +41,8 @@ namespace TechStore.Core.Entities
             var item = new ItemPedido(Id, produto.Id, quantidade, precoUnitario);
             Itens.Add(item);
 
-            // Atualizar valor total
             ValorTotal += item.Subtotal;
 
-            // Atualizar estoque do produto
             produto.RemoverEstoque(quantidade);
         }
 
@@ -74,7 +60,6 @@ namespace TechStore.Core.Entities
         {
             Status = novoStatus;
 
-            // Atualizar datas baseadas no status
             switch (novoStatus.ToLower())
             {
                 case "pago":
@@ -96,15 +81,9 @@ namespace TechStore.Core.Entities
 
             Status = "Cancelado";
 
-            // Devolver itens ao estoque
-            foreach (var item in Itens)
-            {
-                // Aqui precisaríamos do repositório de produtos
-                // Para simplificar, apenas marcamos que precisa devolver
-            }
+            foreach (var item in Itens){}
         }
 
-        // método para aplicar cupom
         public void AplicarCupom(Cupom cupom)
         {
             if (!cupom.PodeSerUtilizado(ValorTotal))
@@ -113,7 +92,6 @@ namespace TechStore.Core.Entities
             CupomId = cupom.Id;
             ValorDesconto = cupom.CalcularDesconto(ValorTotal);
 
-            // Utilizar o cupom
             cupom.Utilizar();
         }
     }

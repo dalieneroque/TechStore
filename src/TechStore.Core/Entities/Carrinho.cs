@@ -12,17 +12,14 @@ namespace TechStore.Core.Entities
         public DateTime? DataAtualizacao { get; private set; }
         public decimal ValorTotal => Itens.Sum(i => i.Subtotal);
 
-        // Itens do carrinho
         public ICollection<CarrinhoItem> Itens { get; private set; } = new List<CarrinhoItem>();
 
-        // Construtor
         public Carrinho(string usuarioId)
         {
             UsuarioId = usuarioId;
             DataCriacao = DateTime.UtcNow;
         }
 
-        // Métodos de domínio
         public void AdicionarItem(Produto produto, int quantidade)
         {
             if (quantidade <= 0)
@@ -67,7 +64,6 @@ namespace TechStore.Core.Entities
             var item = Itens.FirstOrDefault(i => i.ProdutoId == produtoId);
             if (item != null)
             {
-                // Verificar estoque (precisaríamos do produto aqui)
                 item.AtualizarQuantidade(novaQuantidade);
                 DataAtualizacao = DateTime.UtcNow;
             }
@@ -81,7 +77,6 @@ namespace TechStore.Core.Entities
 
         public bool EstaVazio => !Itens.Any();
 
-        // Construtor privado para EF
         private Carrinho() { }
     }
 }

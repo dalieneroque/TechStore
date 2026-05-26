@@ -27,7 +27,6 @@ builder.Services.AddScoped<PedidoService>();
 builder.Services.AddScoped<CategoriaService>();
 
 
-//Autenticação JWT
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(
     sp => sp.GetRequiredService<JwtAuthenticationStateProvider>());

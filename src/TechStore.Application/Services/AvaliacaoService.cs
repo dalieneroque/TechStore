@@ -33,19 +33,16 @@ namespace TechStore.Application.Services
 
         public async Task<AvaliacaoDTO> CriarAvaliacaoAsync(string usuarioId, CriarAvaliacaoDTO avaliacaoDTO)
         {
-            // Verificar se produto existe
             var produto = await _produtoRepository.GetByIdAsync(avaliacaoDTO.ProdutoId);
             if (produto == null)
                 throw new KeyNotFoundException($"Produto com ID {avaliacaoDTO.ProdutoId} não encontrado");
 
-            // Verificar se usuário já avaliou este produto
             var avaliacaoExistente = await _context.Avaliacoes
                 .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId && a.ProdutoId == avaliacaoDTO.ProdutoId);
 
             if (avaliacaoExistente != null)
                 throw new InvalidOperationException("Você já avaliou este produto");
 
-            // Criar avaliação
             var avaliacao = new Avaliacao(
                 avaliacaoDTO.ProdutoId,
                 usuarioId,
@@ -124,7 +121,6 @@ namespace TechStore.Application.Services
             if (avaliacao == null)
                 throw new KeyNotFoundException($"Avaliação com ID {avaliacaoId} não encontrada");
 
-            // Verificar permissão
             if (!isAdmin && avaliacao.UsuarioId != usuarioId)
                 throw new UnauthorizedAccessException("Você não tem permissão para excluir esta avaliação");
 

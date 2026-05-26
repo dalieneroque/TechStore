@@ -7,7 +7,6 @@ using TechStore.Web.Auth;
 
 namespace TechStore.Web.Services
 {
-    // Serviço de autenticação
     public class AuthService
     {
         private readonly HttpClient _http;
@@ -28,7 +27,6 @@ namespace TechStore.Web.Services
             _ = LoadAuthFromStorage();
         }
 
-        // Login
         public async Task<bool> LoginAsync(LoginDTO login)
         {
             try
@@ -53,7 +51,6 @@ namespace TechStore.Web.Services
             }
         }
 
-        // Registrar
         public async Task<bool> RegistrarAsync(RegistrarUsuarioDTO registrar)
         {
             try
@@ -73,14 +70,12 @@ namespace TechStore.Web.Services
             }
         }
 
-        // Logout
         public async Task LogoutAsync()
         {          
             IsAuthenticated = false;
             UserName = string.Empty;
             Token = string.Empty;
 
-            // Remove token do HttpClient
             _http.DefaultRequestHeaders.Authorization = null;
 
             await _localStorage.RemoveItemAsync("authToken");
@@ -92,7 +87,6 @@ namespace TechStore.Web.Services
             OnAuthChanged?.Invoke();
         }
 
-        // Salvar dados de autenticação
         private async Task SaveAuthData(AuthResponseDTO authResult)
         {
             await _localStorage.SetItemAsync("authToken", authResult.Token);
@@ -102,7 +96,6 @@ namespace TechStore.Web.Services
             UserName = authResult.NomeUsuario;
             IsAuthenticated = true;
 
-            // Configura token no HttpClient
             _http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
@@ -112,7 +105,6 @@ namespace TechStore.Web.Services
             OnAuthChanged?.Invoke();
         }
 
-        // Carregar do localStorage
         private async Task LoadAuthFromStorage()
         {
             var token = await _localStorage.GetItemAsync<string>("authToken");
